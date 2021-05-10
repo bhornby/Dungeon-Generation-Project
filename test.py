@@ -34,7 +34,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         for i in map:
             if i == 0:
-                self.rect.x,self.rect.y  = wall.rect.x,wall.rect.y
+                self.rect.x,self.rect.y  = x,y
+            
                 
         
         self.old_x =  self.rect.x
@@ -72,12 +73,20 @@ all_sprite_group = pygame.sprite.Group()
 
 wall_group = pygame.sprite.Group()
 
-wall_count = 110
+wall_count = 100
 numcols = 25
 numrows = 25
 # make it so limited number of walls so that there will always be a route. so there needs to be counter that loses one each time a wall is drawn
-for i in range(wall_count):
+# rule that for a wall to be generated the previous free space must have at least one other free space connected
+while wall_count >= 0:
     map = [[random.randint(0,1) for i  in range(numcols)]for j in range(numrows)]
+    for i in range(len(map)):
+        for j in range(len(map[i])):
+            if j == 1:
+            
+            else:
+                
+    
 # next i
 print(map)
 
@@ -89,12 +98,13 @@ y = 0
 for row in map:
     for column in row:
         if column == 1:
+#             a wall is drawn if the value in the array is = to 1
             my_wall = Wall(WHITE,width,height,x,y)
             all_sprite_group.add(my_wall)
             wall_group.add(my_wall)
         x = x + 40
         #end if
-    #next column
+    #next column 
     x = 0
     y = y + 40
 #next row

@@ -11,10 +11,14 @@ YELLOW = (255,255,0)
 #black screen
 size = (1000,720)
 
+# width of each tile
+width = 40
+height = 40
+
 screen = pygame.display.set_mode(size)
 
 #title of the window
-pygame.display.set_caption("Hitman")
+pygame.display.set_caption("Infiltration")
 
 #exit game falg set to false
 done = False
@@ -32,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface([width,height])
         self.image.fill(colour)
         
-        #set position of player
+        #set position of player need to make it so the player starts in a spot with no wall
         self.rect = self.image.get_rect()
         self.rect.x = 360
         self.rect.y = 500
@@ -58,7 +62,7 @@ class Player(pygame.sprite.Sprite):
     def player_set_speed(self,x,y):
         self.speed_x = x
         self.speed_y = y
-        
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self,colour,width,height,x,y):
         super().__init__()
@@ -67,10 +71,27 @@ class Wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+    
+    
     #end procedure
 #end class
+class Maze:
+    def __init_(self,width,height):
+        super().__init__()
+        self.width = width
+        self.height = height
+        self.size = (width, height)
+    
+    def generate(self):
+        numcols = 25
+        numrows = 25
+        map = [[random.randint(0,1) for i  in range(numcols)]for j in range(numrows)]
+    
+    
 
-map = [
+    
+
+'''map = [
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -86,11 +107,11 @@ map = [
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-       [1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
-       [1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     ]
-
+'''
 all_sprite_group = pygame.sprite.Group()
 
 my_player = Player(YELLOW,40,40,5)
@@ -106,7 +127,7 @@ y = 0
 for row in map:
     for column in row:
         if column == 1:
-            my_wall = Wall(WHITE,40,40,x,y)
+            my_wall = Wall(WHITE,width,height,x,y)
             all_sprite_group.add(my_wall)
             wall_group.add(my_wall)
         x = x + 40
@@ -127,17 +148,17 @@ while not done:
             
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:#if left key is pressed
-                my_player.player_set_speed(-5,0)
+                my_player.player_set_speed(-1,0)
             elif event.key == pygame.K_RIGHT:
-                my_player.player_set_speed(5,0)
+                my_player.player_set_speed(1,0)
             elif event.key == pygame.K_UP:
-                my_player.player_set_speed(0,-5)
+                my_player.player_set_speed(0,-1)
             elif event.key == pygame.K_DOWN:
-                my_player.player_set_speed(0,5)
+                my_player.player_set_speed(0,1)
                 
-        '''elif event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                my_player.player_set_speed(0,0)'''
+                my_player.player_set_speed(0,0)
             
             
     
@@ -155,7 +176,7 @@ while not done:
     
     
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(240)
     
 #end game loop
 pygame.quit()

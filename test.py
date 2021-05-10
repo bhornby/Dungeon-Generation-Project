@@ -3,14 +3,17 @@ import pygame
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-
 YELLOW = (255,255,0)
-#black screen
-size = (1000,720)
 
-# width of each tile
+# core attributes
 width = 40
 height = 40
+speed = 5
+numcols = 20
+numrows = 10
+
+#black screen
+size = (numcols * width, numrows * height)
 
 screen = pygame.display.set_mode(size)
 
@@ -20,6 +23,15 @@ done = False
 #screen refresh rate
 clock = pygame.time.Clock()
 
+class Wall(pygame.sprite.Sprite):
+    def __init__(self,colour,width,height,x,y):
+        super().__init__()
+        self.image = pygame.Surface([width,height])
+        self.image.fill(colour)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,width,height,speed):
         super().__init__()
@@ -32,12 +44,23 @@ class Player(pygame.sprite.Sprite):
         
         #set position of player need to make it so the player starts in a spot with no wall
         self.rect = self.image.get_rect()
-        for i in range(len(map)):
-            for j in range(len(map[i])):
-                if j == 0:
-                    self.rect.x,self.rect.y  = x,y
+        
+        fini = False
+        i = 0
+        while not fini and i < len(map):
+            j = 0
+            while not fini and j < len(map[i]):
+                if (map[i][j]) == 0:
+                    self.rect.x,self.rect.y  = (i)*width,(j)*height
+                    fini = True
+                    print(map)
+                    print(i,j,map[i][j])
+                j += 1     #same as j = j + 1
+            i += 1
+                        
+                    
             
-                
+                        
         
         self.old_x =  self.rect.x
         self.old_y = self.rect.y
@@ -60,62 +83,40 @@ class Player(pygame.sprite.Sprite):
     def player_set_speed(self,x,y):
         self.speed_x = x
         self.speed_y = y
-
-class Wall(pygame.sprite.Sprite):
-    def __init__(self,colour,width,height,x,y):
-        super().__init__()
-        self.image = pygame.Surface([width,height])
-        self.image.fill(colour)
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
         
-all_sprite_group = pygame.sprite.Group()
-
-wall_group = pygame.sprite.Group()
-
-wall_count = 100
-numcols = 24
-numrows = 24
 # make it so limited number of walls so that there will always be a route. so there needs to be counter that loses one each time a wall is drawn
 # rule that for a wall to be generated the previous free space must have at least one other free space connected
 # create the grid and make the path first set values to 1 the create the map so its not touching the path.
-while wall_count >= 0:
-    map = [[random.randint(0,1) for i  in range(numcols)]for j in range(numrows)]
-    wall_count = wall_count-1
-    '''for i in range(len(map)):
-        for j in range(len(map[i])):
-            if j == 1:s
-                next '''
-            
-            
-                
-    
-# next i
-print(map)
+# map = [[random.randint(0,1) for i  in range(numcols)]for j in range(numrows)]
+ # a wall is drawn if the value in the array is == to 1
+ 
+def generate():
+    map = [[0]*numrows for i in range(numcols)]
+    for i in range(numcols):
+        for j in range(numrows):
+            v = random.randint(0,1)
+            map[i][j] = v
+            if v == 1:
+                my_wall = Wall(WHITE,width,height,i*width,j*height)
+                all_sprite_group.add(my_wall)
+                wall_group.add(my_wall)
+            #end if
+        #next column 
+    #next row
+    return map
+
+all_sprite_group = pygame.sprite.Group()
+wall_group = pygame.sprite.Group()
+
+map = generate()
 
 
-x = 0
-y = 0
-    
-
-for row in map:
-    for column in row:
-        if column == 1:
-#             a wall is drawn if the value in the array is = to 1
-            my_wall = Wall(WHITE,width,height,x,y)
-            all_sprite_group.add(my_wall)
-            wall_group.add(my_wall)
-        x = x + 40
-        #end if
-    #next column 
-    x = 0
-    y = y + 40
-#next row
-
-my_player = Player(YELLOW,20,20,5)
+my_player = Player(YELLOW,width,height,speed)
 all_sprite_group.add(my_player)
 
+
+
+    
 pygame.init()
 #game loop
 while not done:

@@ -58,9 +58,26 @@ class Tree:
         for n in self.leaves:
             p = random.randint(0,1)
             if p == 0:
-                #0 means horizontal split 1 means vertical split
-                width = random.randint(20,n.width-10)
-                l = Node(n,width,n.height)
+                #0 means horizontal split 
+                width_l = random.randint(20,n.width-10)
+                width_r = n.width - width_l
+                
+                l = Node(n,width_l,n.height)
+                r = Node(n,width_r,n.height)
+                
+                
+            elif p ==1:
+                #1 means a vertical split
+                height_l = random.randint(20,n.height-10)
+                height_r = n.height - height_l
+                
+                l = Node(n,n.width,height_l)
+                r = Node(n,n.width,height_r)
+            #end if
+        #next n
+                
+                
+                
                 
 @dataclass 
 class Room:

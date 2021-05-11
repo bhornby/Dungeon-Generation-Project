@@ -1,16 +1,20 @@
 import random
 import pygame
+from dataclasses import dataclass
+from typing import List
+from typing import Object
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 YELLOW = (255,255,0)
+WALL_IMAGE= pygame.image.load("stonebrick.png")
 
 # core attributes
 width = 40
 height = 40
 speed = 5
-numcols = 20
-numrows = 10
+numcols = 25
+numrows = 20
 
 #black screen
 size = (numcols * width, numrows * height)
@@ -23,14 +27,32 @@ done = False
 #screen refresh rate
 clock = pygame.time.Clock()
 
+@dataclass
+class Node:
+    parent: Object[Node] 
+    children: List[Node]
+
+@dataclass 
+class Tree:
+    root: Object[Node]
+    leaves: List[Node]
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self,colour,width,height,x,y):
         super().__init__()
-        self.image = pygame.Surface([width,height])
-        self.image.fill(colour)
+        self.image = pygame.transform.scale(pygame.image.load("stonebrick.png").convert(),(width,height))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+class Floor(pygame.sprite.Sprite):
+    def __init__(self,width,heigh,x,y):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("floor.png").convert(),(width,height))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
         
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,width,height,speed):
@@ -57,11 +79,6 @@ class Player(pygame.sprite.Sprite):
                     print(i,j,map[i][j])
                 j += 1     #same as j = j + 1
             i += 1
-                        
-                    
-            
-                        
-        
         self.old_x =  self.rect.x
         self.old_y = self.rect.y
         
@@ -100,6 +117,10 @@ def generate():
                 my_wall = Wall(WHITE,width,height,i*width,j*height)
                 all_sprite_group.add(my_wall)
                 wall_group.add(my_wall)
+            elif v== 0:
+                my_floor = Floor(width,height,i*width,j*height)
+                all_sprite_group.add(my_floor)
+                floor_group.add(my_floor)
             #end if
         #next column 
     #next row
@@ -107,16 +128,12 @@ def generate():
 
 all_sprite_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()
-
+floor_group = pygame.sprite.Group()
 map = generate()
-
-
 my_player = Player(YELLOW,width,height,speed)
 all_sprite_group.add(my_player)
 
 
-
-    
 pygame.init()
 #game loop
 while not done:

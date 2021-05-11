@@ -29,13 +29,43 @@ clock = pygame.time.Clock()
 
 @dataclass
 class Node:
-    parent: Object[Node] 
-    children: List[Node]
-
-@dataclass 
+    parent: Object[Node] #cant be defaulted
+    width: int
+    height: int
+    children: List[Node] = []
+    room: Object[Room] = None
+    
+#     def __init__(self,width,height):
+#         super().__init__()
+#         self.width = width
+#         self.height = height
+    
+      
+@dataclass
 class Tree:
     root: Object[Node]
     leaves: List[Node]
+    margin: int
+    
+    def __init__(self,width,height,margin):
+        super().__init__()
+        #root will equal a node with this width and height
+        self.root = Node(None, width, height)
+        self.leaves = [self.root]
+        slef.margin = margin
+        
+    def split(self):
+        for n in self.leaves:
+            p = random.randint(0,1)
+            if p == 0:
+                #0 means horizontal split 1 means vertical split
+                width = random.randint(20,n.width-10)
+                l = Node(n,width,n.height)
+                
+@dataclass 
+class Room:
+    
+    
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self,colour,width,height,x,y):

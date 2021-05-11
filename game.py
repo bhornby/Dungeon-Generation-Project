@@ -1,8 +1,7 @@
 import random
 import pygame
-from dataclasses import dataclass
-from typing import List
-from typing import Object
+from dataclasses import dataclass, field
+from typing import Any, List
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
@@ -29,11 +28,11 @@ clock = pygame.time.Clock()
 
 @dataclass
 class Node:
-    parent: Object[Node] #cant be defaulted
+    parent: Any #cant be defaulted
     width: int
     height: int
-    children: List[Node] = []
-    room: Object[Room] = None
+    children: List[Any] = field(default_factory = [])
+    room: Any = None
     
 #     def __init__(self,width,height):
 #         super().__init__()
@@ -43,8 +42,8 @@ class Node:
       
 @dataclass
 class Tree:
-    root: Object[Node]
-    leaves: List[Node]
+    root: Any
+    leaves: List[Any]
     margin: int
     
     def __init__(self,width,height,margin):
@@ -75,15 +74,14 @@ class Tree:
                 r = Node(n,n.width,height_r)
             #end if
         #next n
+              
                 
-                
-                
-                
-@dataclass 
+@dataclass
 class Room:
+    width: int
+    height: int
     
     
-
 class Wall(pygame.sprite.Sprite):
     def __init__(self,colour,width,height,x,y):
         super().__init__()

@@ -31,7 +31,7 @@ class Node:
     parent: Any #cant be defaulted
     width: int
     height: int
-    children: List[Any] = field(default_factory = [])
+    children: List[Any] = field(default_factory = [])#allows the type list to have a default value 
     room: Any = None
     
 #     def __init__(self,width,height):
@@ -156,12 +156,22 @@ def generate():
     map = [[0]*numrows for i in range(numcols)]
     for i in range(numcols):
         for j in range(numrows):
-            v = random.randint(0,1)
+            v = random.randint(0,3)
             map[i][j] = v
             if v == 1:
                 my_wall = Wall(WHITE,width,height,i*width,j*height)
                 all_sprite_group.add(my_wall)
                 wall_group.add(my_wall)
+            elif v == 2:
+                my_floor = Floor(width,height,i*width,j*height)
+                all_sprite_group.add(my_floor)
+                floor_group.add(my_floor)
+                
+            elif v == 3:
+                my_floor = Floor(width,height,i*width,j*height)
+                all_sprite_group.add(my_floor)
+                floor_group.add(my_floor)
+                
             elif v== 0:
                 my_floor = Floor(width,height,i*width,j*height)
                 all_sprite_group.add(my_floor)

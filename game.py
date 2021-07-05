@@ -1,5 +1,6 @@
 import random
 import pygame
+import sys
 from dataclasses import dataclass, field
 from typing import Any, List
 
@@ -184,32 +185,55 @@ def generate(floor_group,wall_group,all_sprite_group):
     #next row
     return map
 
+def draw_text(text, font, color, surface, x, y):
+    textobj = font.render(text, 1, color)
+    textrect = textobj.get_rect()
+    textrect.topleft = (x, y)
+    surface.blit(textobj, textrect)
+    
+def main_menu():
+    menu = True
+    font = pygame.font.SysFont('Arial', 20)
+ 
+    while menu:
 
-        
-def game_intro():
-    
-    intro = True
-    
-    while intro:
-        for event in pygame.event.get():
-            if event.type ==pygame.QUIT:
-                pygame.quit()
-                
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:#if enter key is pressed
-                    main_loop()
-                    
         screen.fill(WHITE)
-        h1 = pygame.font.SysFont('freesansbold.ttf', 70, True, False)
-        h2 = pygame.font.SysFont('freesansbold.ttf', 50, True, False)
+        draw_text('main menu', font , BLACK, screen, (screen.get_width()//2) ,(screen.get_height()//3))
+ 
+        mx, my = pygame.mouse.get_pos()
+ 
+        button_1 = pygame.Rect(50, 100, 200, 50)
+        button_2 = pygame.Rect(50, 200, 200, 50)
         
-        text = [(h1.render("INFILTRATION",True,BLACK),4),(h2.render("Start Game (Enter)",True,BLACK),3)]
+#         should probably make a button class
         
-        for t,h in text:    
-            screen.blit(t, (screen.get_width()//2 - t.get_width()//2,screen.get_height()//h - t.get_height()//2))
-        
+        if button_1.collidepoint((mx, my)):
+            if click:
+                main_loop()
+                
+        if button_2.collidepoint((mx, my)):
+            if click:
+#                 options()
+                pass
+                
+        pygame.draw.rect(screen, (255, 0, 0), button_1)
+        pygame.draw.rect(screen, (255, 0, 0), button_2)
+ 
+        click = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()    
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
+ 
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(60)
         
 def main_loop():
     all_sprite_group = pygame.sprite.Group()
@@ -265,5 +289,5 @@ def main_loop():
 # end function
 
 pygame.init()
-game_intro()
+main_menu()
 pygame.quit()

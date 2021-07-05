@@ -185,49 +185,50 @@ def generate(floor_group,wall_group,all_sprite_group):
     #next row
     return map
 
-def draw_text(text, font, color, surface, x, y):
+def draw_text(text, font, color, surface):
     textobj = font.render(text, 1, color)
     textrect = textobj.get_rect()
+    x = (screen.get_width()//2 - textobj.get_width()//2)
+    y = (screen.get_height()//4 - textobj.get_height()//2)
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
     
 def main_menu():
     menu = True
-    font = pygame.font.SysFont('Arial', 20)
- 
-    while menu:
-
+    click = False
+    
+    button_1 = pygame.Rect(50, 100,100 ,50 )
+    button_2 = pygame.Rect(50, 200,100 ,50)
+    #should probably make a button class
+    
+    def display_menu():
+        font = pygame.font.SysFont('Arial', 70)
         screen.fill(WHITE)
-        draw_text('main menu', font , BLACK, screen, (screen.get_width()//2) ,(screen.get_height()//3))
- 
+        draw_text('main menu', font , BLACK, screen,)
+
+        pygame.draw.rect(screen, (255, 0, 0), button_1)
+        pygame.draw.rect(screen, (255, 0, 0), button_2)
+    
+    display_menu()
+    while menu:
         mx, my = pygame.mouse.get_pos()
- 
-        button_1 = pygame.Rect(50, 100, 200, 50)
-        button_2 = pygame.Rect(50, 200, 200, 50)
-        
-#         should probably make a button class
-        
+
         if button_1.collidepoint((mx, my)):
             if click:
                 main_loop()
+                display_menu()
                 
         if button_2.collidepoint((mx, my)):
             if click:
 #                 options()
                 pass
-                
-        pygame.draw.rect(screen, (255, 0, 0), button_1)
-        pygame.draw.rect(screen, (255, 0, 0), button_2)
- 
+            
         click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()    
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                menu = False
+                
+                    
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
@@ -268,6 +269,8 @@ def main_loop():
                     my_player.player_set_speed(0,-1)
                 elif event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,1)
+                elif event.key == pygame.K_ESCAPE:
+                    done = True
                     
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:

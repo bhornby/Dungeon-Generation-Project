@@ -20,11 +20,13 @@ size = (numcols * width, numrows * height)
 
 screen = pygame.display.set_mode(size)
 
-#exit game falg set to false
-done = False
-
 #screen refresh rate
 clock = pygame.time.Clock()
+
+
+ 
+
+
 
 @dataclass
 class Node:
@@ -100,10 +102,11 @@ class Floor(pygame.sprite.Sprite):
         
         
 class Player(pygame.sprite.Sprite): 
-    def __init__(self,colour,width,height,speed):
+    def __init__(self,colour,width,height,speed,map,wall_group):
         super().__init__()
         
         #set player dimentions
+        self.wall_group = wall_group
         self.speed_x = 0
         self.speed_y = 0
         self.image = pygame.Surface([width,height])
@@ -132,7 +135,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = self.rect.x + self.speed_x
         self.rect.y = self.rect.y + self.speed_y
         
-        wall_hit_list = pygame.sprite.spritecollide(my_player, wall_group, False)
+        wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
         for x in wall_hit_list:
             self.rect.x =  self.old_x 
             self.rect.y =  self.old_y 
@@ -152,7 +155,7 @@ class Player(pygame.sprite.Sprite):
 # map = [[random.randint(0,1) for i  in range(numcols)]for j in range(numrows)]
  # a wall is drawn if the value in the array is == to 1
  
-def generate():
+def generate(floor_group,wall_group,all_sprite_group):
     map = [[0]*numrows for i in range(numcols)]
     for i in range(numcols):
         for j in range(numrows):
@@ -181,48 +184,77 @@ def generate():
     #next row
     return map
 
-all_sprite_group = pygame.sprite.Group()
-wall_group = pygame.sprite.Group()
-floor_group = pygame.sprite.Group()
-map = generate()
-my_player = Player(YELLOW,width,height,speed)
-all_sprite_group.add(my_player)
+# def text_objects(text, font):
+#     textSurface = font.render(text, True, black)
+#     return textSurface, textSurface.get_rect()
+# 
+# def game_intro():
+#     intro = True
+#     while intro:
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 intro = False
+#                 
+#         screen.fill(WHITE)
+#         large_text = pygame.font.Font('freesansbold.ttf',115)
+#         text_surf, text_rect = text_objects("My game", large_text)
+#         textrect.center = (( numcols * width/2),(numrows * height/2))
+#         gameDisplay.blit(text_surf, text_rect)
+#         pygame.display.update()
+#         clock.tick(15)
+def main_loop():
+    all_sprite_group = pygame.sprite.Group()
+    
+    wall_group = pygame.sprite.Group()
 
+    
+    floor_group = pygame.sprite.Group()
+    
+    map = generate(floor_group,wall_group,all_sprite_group)
+    
+    my_player = Player(YELLOW,width,height,speed, map,wall_group)
+    
+    
+    all_sprite_group.add(my_player)
+    
+    
+    #exit game falg set to false
+    done = False
+    while not done:
+        #user input
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+             
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:#if left key is pressed
+                    my_player.player_set_speed(-1,0)
+                elif event.key == pygame.K_RIGHT:
+                    my_player.player_set_speed(1,0)
+                elif event.key == pygame.K_UP:
+                    my_player.player_set_speed(0,-1)
+                elif event.key == pygame.K_DOWN:
+                    my_player.player_set_speed(0,1)
+                    
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    my_player.player_set_speed(0,0)
+        
+        #update all sprites    
+        all_sprite_group.update()
+        #screen background is black
+        screen.fill(BLACK)
+        #draw function
+        all_sprite_group.draw(screen)
+        #flip display to show new position of objects
+        
+        
+        
+        pygame.display.flip()
+        clock.tick(240)
+#end game loop
+# end function
 
 pygame.init()
-#game loop
-while not done:
-    #user input
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-         
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:#if left key is pressed
-                my_player.player_set_speed(-1,0)
-            elif event.key == pygame.K_RIGHT:
-                my_player.player_set_speed(1,0)
-            elif event.key == pygame.K_UP:
-                my_player.player_set_speed(0,-1)
-            elif event.key == pygame.K_DOWN:
-                my_player.player_set_speed(0,1)
-                
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                my_player.player_set_speed(0,0)
-    
-    #update all sprites    
-    all_sprite_group.update()
-    #screen background is black
-    screen.fill(BLACK)
-    #draw function
-    all_sprite_group.draw(screen)
-    #flip display to show new position of objects
-    
-    
-    
-    pygame.display.flip()
-    clock.tick(240)
-    
-#end game loop
+main_loop()
 pygame.quit()

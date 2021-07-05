@@ -184,24 +184,33 @@ def generate(floor_group,wall_group,all_sprite_group):
     #next row
     return map
 
-# def text_objects(text, font):
-#     textSurface = font.render(text, True, black)
-#     return textSurface, textSurface.get_rect()
-# 
-# def game_intro():
-#     intro = True
-#     while intro:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 intro = False
-#                 
-#         screen.fill(WHITE)
-#         large_text = pygame.font.Font('freesansbold.ttf',115)
-#         text_surf, text_rect = text_objects("My game", large_text)
-#         textrect.center = (( numcols * width/2),(numrows * height/2))
-#         gameDisplay.blit(text_surf, text_rect)
-#         pygame.display.update()
-#         clock.tick(15)
+
+        
+def game_intro():
+    
+    intro = True
+    
+    while intro:
+        for event in pygame.event.get():
+            if event.type ==pygame.QUIT:
+                pygame.quit()
+                
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:#if enter key is pressed
+                    main_loop()
+                    
+        screen.fill(WHITE)
+        h1 = pygame.font.SysFont('freesansbold.ttf', 70, True, False)
+        h2 = pygame.font.SysFont('freesansbold.ttf', 50, True, False)
+        
+        text = [(h1.render("INFILTRATION",True,BLACK),4),(h2.render("Start Game (Enter)",True,BLACK),3)]
+        
+        for t,h in text:    
+            screen.blit(t, (screen.get_width()//2 - t.get_width()//2,screen.get_height()//h - t.get_height()//2))
+        
+        pygame.display.update()
+        clock.tick(15)
+        
 def main_loop():
     all_sprite_group = pygame.sprite.Group()
     
@@ -256,5 +265,5 @@ def main_loop():
 # end function
 
 pygame.init()
-main_loop()
+game_intro()
 pygame.quit()

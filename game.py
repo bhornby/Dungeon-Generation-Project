@@ -197,8 +197,8 @@ def main_menu():
     menu = True
     click = False
     
-    button_1 = pygame.Rect(50, 100,100 ,50 )
-    button_2 = pygame.Rect(50, 200,100 ,50)
+    button_1 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
+    button_2 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50)
     #should probably make a button class
     
     def display_menu():

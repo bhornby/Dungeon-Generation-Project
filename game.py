@@ -108,13 +108,11 @@ class Floor(pygame.sprite.Sprite):
 # pygame.draw.rect(screen, RED, button_1)
 # pygame.draw.rect(screen, RED, button_2)
 
-class Button():
-    def __init__(self,x,y,width,height):
-        super().__init__()
-        self.rect.x = x
-        self.rect.y  = y
-        self.width = width
-        self.height = height    
+class Button(pygame.Rect):
+    def __init__(self,left, top, width, height):
+        super().__init__(left, top, width, height)
+#         no need for a rect as it is a rect
+         
         
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,width,height,speed,map,wall_group):
@@ -233,9 +231,9 @@ def options_menu():
 def main_menu():
     menu = True
     click = False
-    
-    button_1 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
-    button_2 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50)
+
+    button_1 = Button(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
+    button_2 = Button(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50)
     #should probably make a button class
     
     def display_menu():

@@ -126,7 +126,7 @@ class Button():
         pygame.draw.rect(screen, self.color, (self.x,self.y,self.width,self.height),0)
         
         if self.text != '':
-            font = pygame.font.SysFont('m5x7', 60)
+            font = pygame.font.SysFont('m5x7', 40)
             text = font.render(self.text, 1, (0,0,0))
             screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
 
@@ -232,8 +232,8 @@ def draw_text(text, font, color, surface):
 def options_menu():
     options = True
     
-    button_1 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
-    button_2 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50)
+    button_1 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 200, 100)
+    button_2 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//2.4, 200, 100)
     
     def display_options():
         
@@ -247,7 +247,7 @@ def options_menu():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     print("bye")
-                    main_menu()
+                    options = False
                     
         pygame.display.update()
         clock.tick(60)               
@@ -255,8 +255,8 @@ def options_menu():
 def main_menu():
     menu = True
     # self, x,y,width,height,color, text=''
-    button_1 = Button(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50, RED,'Start Game')
-    button_2 = Button(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50, RED, 'Options')
+    button_1 = Button(screen.get_width()//2 - 100, screen.get_height()//3, 200, 50, RED,'Start Game')
+    button_2 = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Options')
     #should probably make a button class
     
     def display_menu():
@@ -281,7 +281,29 @@ def main_menu():
                     print("bye")
                     pygame.quit()
                     sys.exit()
-                 
+                    
+            if event.type == pygame.MOUSEMOTION:
+                if button_1.isOver(pos):
+                    button_1.color = LIGHT_RED
+                    button_1.draw(screen, BLACK)
+                
+                else:
+                    button_1.color = RED
+                    button_1.draw(screen, BLACK)
+                    
+                    
+                if button_2.isOver(pos):
+                    button_2.color = LIGHT_RED
+                    button_2.draw(screen, BLACK)
+                
+                else:
+                    button_2.color = RED
+                    button_2.draw(screen, BLACK)
+                
+                    
+                    
+ 
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_1.isOver(pos):
                     main_loop()
@@ -289,11 +311,8 @@ def main_menu():
                     
                 if button_2.isOver(pos):
                     options_menu()   
-                
-            if event.type == pygame.MOUSEMOTION:
-                if button_1.isOver(pos):
-                    button_1.color = LIGHT_RED
- 
+                    display_menu()
+            
         pygame.display.update()
         clock.tick(60)
 

@@ -8,6 +8,7 @@ WHITE = (255,255,255)
 BLACK = (0,0,0)
 YELLOW = (255,255,0)
 RED = (255, 0, 0)
+LIGHT_RED = (255, 127, 127)
 WALL_IMAGE= pygame.image.load("stonebrick.png")
 
 # core attributes
@@ -108,10 +109,33 @@ class Floor(pygame.sprite.Sprite):
 # pygame.draw.rect(screen, RED, button_1)
 # pygame.draw.rect(screen, RED, button_2)
 
-class Button(pygame.Rect):
-    def __init__(self,left, top, width, height):
-        super().__init__(left, top, width, height)
-#         no need for a rect as it is a rect
+class Button():
+    def __init__(self, x,y,width,height,color, text=''):
+        self.color = color
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.text = text
+        
+    def draw(self,screen,outline=None):
+        #Call this method to draw the button on the screen
+        if outline:
+            pygame.draw.rect(screen, outline, (self.x-2,self.y-2,self.width+4,self.height+4),0)
+            
+        pygame.draw.rect(screen, self.color, (self.x,self.y,self.width,self.height),0)
+        
+        if self.text != '':
+            font = pygame.font.SysFont('m5x7', 60)
+            text = font.render(self.text, 1, (0,0,0))
+            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
+
+    def isOver(self, pos):
+        #Pos = the mouse co-ords
+        if pos[0] > self.x and pos[0] < self.x + self.width:
+            if pos[1] > self.y and pos[1] < self.y + self.height:
+                return True    
+        return False
          
         
 class Player(pygame.sprite.Sprite): 
@@ -230,10 +254,9 @@ def options_menu():
         
 def main_menu():
     menu = True
-    click = False
-
-    button_1 = Button(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
-    button_2 = Button(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50)
+    # self, x,y,width,height,color, text=''
+    button_1 = Button(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50, RED,'Start Game')
+    button_2 = Button(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50, RED, 'Options')
     #should probably make a button class
     
     def display_menu():
@@ -241,23 +264,14 @@ def main_menu():
         screen.fill(WHITE)
         draw_text('Main Menu', font , BLACK, screen,)
 
-        pygame.draw.rect(screen, RED, button_1)
-        pygame.draw.rect(screen, RED, button_2)
+        button_1.draw(screen, BLACK)
+        button_2.draw(screen, BLACK)
         
     display_menu()
     while menu:
-        mx, my = pygame.mouse.get_pos()
-
-        if button_1.collidepoint((mx, my)):
-            if click:
-                main_loop()
-                display_menu()
-                
-        if button_2.collidepoint((mx, my)):
-            if click:
-                options_menu()            
+        
+        pos = pygame.mouse.get_pos()        
             
-        click = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 menu = False
@@ -267,11 +281,18 @@ def main_menu():
                     print("bye")
                     pygame.quit()
                     sys.exit()
-                
-            
+                 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click = True
+                if button_1.isOver(pos):
+                    main_loop()
+                    display_menu()
+                    
+                if button_2.isOver(pos):
+                    options_menu()   
+                
+            if event.type == pygame.MOUSEMOTION:
+                if button_1.isOver(pos):
+                    button_1.color = LIGHT_RED
  
         pygame.display.update()
         clock.tick(60)

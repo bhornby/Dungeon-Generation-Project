@@ -7,6 +7,7 @@ from typing import Any, List
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 YELLOW = (255,255,0)
+RED = (255, 0, 0)
 WALL_IMAGE= pygame.image.load("stonebrick.png")
 
 # core attributes
@@ -102,10 +103,18 @@ class Floor(pygame.sprite.Sprite):
         self.rect.y = y
 
 # pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
-class Play_Button(pygame.sprite.Sprite):
+# button_1 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
+# button_2 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50)
+# pygame.draw.rect(screen, RED, button_1)
+# pygame.draw.rect(screen, RED, button_2)
+
+class Button():
     def __init__(self,x,y,width,height):
-        super(),__init__()
-        
+        super().__init__()
+        self.rect.x = x
+        self.rect.y  = y
+        self.width = width
+        self.height = height    
         
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,width,height,speed,map,wall_group):
@@ -197,7 +206,30 @@ def draw_text(text, font, color, surface):
     y = (screen.get_height()//4 - textobj.get_height()//2)
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
+
+def options_menu():
+    options = True
     
+    button_1 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
+    button_2 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//2.4, 100, 50)
+    
+    def display_options():
+        
+        font = pygame.font.SysFont('m5x7', 70)
+        screen.fill(WHITE)
+        draw_text('Options', font , BLACK, screen,)
+            
+    display_options()
+    while options:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("bye")
+                    main_menu()
+                    
+        pygame.display.update()
+        clock.tick(60)               
+        
 def main_menu():
     menu = True
     click = False
@@ -209,11 +241,11 @@ def main_menu():
     def display_menu():
         font = pygame.font.SysFont('m5x7', 70)
         screen.fill(WHITE)
-        draw_text('main menu', font , BLACK, screen,)
+        draw_text('Main Menu', font , BLACK, screen,)
 
-        pygame.draw.rect(screen, (255, 0, 0), button_1)
-        pygame.draw.rect(screen, (255, 0, 0), button_2)
-    
+        pygame.draw.rect(screen, RED, button_1)
+        pygame.draw.rect(screen, RED, button_2)
+        
     display_menu()
     while menu:
         mx, my = pygame.mouse.get_pos()
@@ -225,8 +257,7 @@ def main_menu():
                 
         if button_2.collidepoint((mx, my)):
             if click:
-#                 options()
-                pass
+                options_menu()            
             
         click = False
         for event in pygame.event.get():
@@ -246,7 +277,7 @@ def main_menu():
  
         pygame.display.update()
         clock.tick(60)
-        
+
 def main_loop():
     all_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()

@@ -100,6 +100,11 @@ class Floor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+# pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 100, 50)
+class Play_Button(pygame.sprite.Sprite):
+    def __init__(self,x,y,width,height):
+        super(),__init__()
         
         
 class Player(pygame.sprite.Sprite): 
@@ -202,7 +207,7 @@ def main_menu():
     #should probably make a button class
     
     def display_menu():
-        font = pygame.font.SysFont('Arial', 70)
+        font = pygame.font.SysFont('m5x7', 70)
         screen.fill(WHITE)
         draw_text('main menu', font , BLACK, screen,)
 

@@ -227,8 +227,14 @@ def main_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 menu = False
+            
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("bye")
+                    pygame.quit()
+                    sys.exit()
                 
-                    
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
@@ -238,17 +244,10 @@ def main_menu():
         
 def main_loop():
     all_sprite_group = pygame.sprite.Group()
-    
     wall_group = pygame.sprite.Group()
-
-    
     floor_group = pygame.sprite.Group()
-    
     map = generate(floor_group,wall_group,all_sprite_group)
-    
     my_player = Player(YELLOW,width,height,speed, map,wall_group)
-    
-    
     all_sprite_group.add(my_player)
     
     

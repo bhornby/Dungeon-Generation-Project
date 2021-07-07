@@ -298,12 +298,87 @@ def options_menu():
                     
         pygame.display.update()
         clock.tick(60)               
+
+def difficulty_menu():
+    
+    difficulty = True
+    
+    hard_button = Button(screen.get_width()//2 - 100, screen.get_height()//3, 200, 50, RED,'Hard')
+    medium_button = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Medium')
+    easy_button = Button(screen.get_width()//2 - 100, screen.get_height()//2, 200, 50, RED, 'Easy')
+    
+    
+    def display_difficulty():
         
+        font = pygame.font.SysFont('m5x7', 70)
+        screen.fill(WHITE)
+        draw_text('Difficulty', font , BLACK, screen,)
+        
+        hard_button.draw(screen,BLACK)
+        medium_button.draw(screen,BLACK)
+        easy_button.draw(screen,BLACK)
+            
+    display_difficulty()
+    
+    while difficulty:
+        
+        pos = pygame.mouse.get_pos()
+         
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("done")
+                    difficulty = False
+            
+            if event.type == pygame.MOUSEMOTION:
+                if hard_button.isOver(pos):
+                    hard_button.color = LIGHT_RED
+                    hard_button.draw(screen, BLACK)
+                
+                else:
+                    hard_button.color = RED
+                    hard_button.draw(screen, BLACK)
+                    
+                    
+                if medium_button.isOver(pos):
+                    medium_button.color = LIGHT_RED
+                    medium_button.draw(screen, BLACK)
+                
+                else:
+                    medium_button.color = RED
+                    medium_button.draw(screen, BLACK)
+                
+                if easy_button.isOver(pos):
+                    easy_button.color = LIGHT_RED
+                    easy_button.draw(screen, BLACK)
+                
+                else:
+                    easy_button.color = RED
+                    easy_button.draw(screen, BLACK)
+                
+                    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if hard_button.isOver(pos):
+                    pass
+                    
+                if medium_button.isOver(pos):
+                    pass
+                
+                if easy_button.isOver(pos):
+                    pass
+            
+                    
+        pygame.display.update()
+        clock.tick(60)               
+    
+
 def main_menu():
+    
     menu = True
     # self, x,y,width,height,color, text=''
     button_1 = Button(screen.get_width()//2 - 100, screen.get_height()//3, 200, 50, RED,'Start Game')
-    button_2 = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Options')
+    button_2 = Button(screen.get_width()//2 - 100, screen.get_height()//2, 200, 50, RED, 'Options')
+    button_3 = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Difficulty')
     #should probably make a button class
     
     def display_menu():
@@ -313,6 +388,7 @@ def main_menu():
 
         button_1.draw(screen, BLACK)
         button_2.draw(screen, BLACK)
+        button_3.draw(screen, BLACK)
         
     display_menu()
     while menu:
@@ -347,6 +423,14 @@ def main_menu():
                     button_2.color = RED
                     button_2.draw(screen, BLACK)
                 
+                if button_3.isOver(pos):
+                    button_3.color = LIGHT_RED
+                    button_3.draw(screen, BLACK)
+                
+                else:
+                    button_3.color = RED
+                    button_3.draw(screen, BLACK)
+                
                     
                     
  
@@ -358,6 +442,10 @@ def main_menu():
                     
                 if button_2.isOver(pos):
                     options_menu()   
+                    display_menu()
+                
+                if button_3.isOver(pos):
+                    difficulty_menu()
                     display_menu()
             
         pygame.display.update()

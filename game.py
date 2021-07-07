@@ -19,9 +19,9 @@ numcols = 25
 numrows = 20
 
 #black screen
-size = (numcols * width, numrows * height)
+screen_size = (1440,900)
 
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(screen_size)
 
 #screen refresh rate
 clock = pygame.time.Clock()
@@ -232,22 +232,69 @@ def draw_text(text, font, color, surface):
 def options_menu():
     options = True
     
-    button_1 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//3, 200, 100)
-    button_2 = pygame.Rect(screen.get_width()//2 - 50, screen.get_height()//2.4, 200, 100)
+    screen_size_button = Button(screen.get_width()//2 - 100, screen.get_height()//3, 200, 50, RED,'Screen Size')
+    controls_button = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Controls')
+    audio_button = Button(screen.get_width()//2 - 100, screen.get_height()//2, 200, 50, RED, 'Audio')
+    
     
     def display_options():
         
         font = pygame.font.SysFont('m5x7', 70)
         screen.fill(WHITE)
         draw_text('Options', font , BLACK, screen,)
+        
+        screen_size_button.draw(screen,BLACK)
+        controls_button.draw(screen,BLACK)
+        audio_button.draw(screen,BLACK)
             
     display_options()
     while options:
+        
+        pos = pygame.mouse.get_pos()
+         
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     print("bye")
                     options = False
+            
+            if event.type == pygame.MOUSEMOTION:
+                if screen_size_button.isOver(pos):
+                    screen_size_button.color = LIGHT_RED
+                    screen_size_button.draw(screen, BLACK)
+                
+                else:
+                    screen_size_button.color = RED
+                    screen_size_button.draw(screen, BLACK)
+                    
+                    
+                if controls_button.isOver(pos):
+                    controls_button.color = LIGHT_RED
+                    controls_button.draw(screen, BLACK)
+                
+                else:
+                    controls_button.color = RED
+                    controls_button.draw(screen, BLACK)
+                
+                if audio_button.isOver(pos):
+                    audio_button.color = LIGHT_RED
+                    audio_button.draw(screen, BLACK)
+                
+                else:
+                    audio_button.color = RED
+                    audio_button.draw(screen, BLACK)
+                
+                    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if screen_size_button.isOver(pos):
+                    pass
+                    
+                if controls_button.isOver(pos):
+                    pass
+                
+                if audio_button.isOver(pos):
+                    pass
+            
                     
         pygame.display.update()
         clock.tick(60)               

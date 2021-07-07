@@ -19,7 +19,7 @@ numcols = 25
 numrows = 20
 
 #black screen
-screen_size = (1440,900)
+screen_size = (width * numcols, height * numrows)
 
 screen = pygame.display.set_mode(screen_size)
 

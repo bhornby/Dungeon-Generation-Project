@@ -431,10 +431,6 @@ def main_menu():
                     button_3.color = RED
                     button_3.draw(screen, BLACK)
                 
-                    
-                    
- 
-            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_1.isOver(pos):
                     main_loop()

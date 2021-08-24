@@ -86,7 +86,6 @@ class DungeonGenerator:
             # available section. 
             room_width = round(randrange(60, 100) / 100 * section_width)
             room_height = round(randrange(60, 100) / 100 * section_height)
-
             room_start_row = leaf[0]
             room_start_col = leaf[1]
     

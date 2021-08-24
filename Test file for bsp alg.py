@@ -53,7 +53,7 @@ class DungeonGenerator:
         self.random_split(min_row, min_col, split, max_col)
         #split in the rows
         self.random_split(split + 1, min_col, max_row, max_col)
-        return split
+        return (split, min_col + (max_col - min_col)//2)
         
 
     def split_on_vertical(self, min_row, min_col, max_row, max_col):        
@@ -61,7 +61,7 @@ class DungeonGenerator:
         self.random_split(min_row, min_col, max_row, split)
          #split in the cols
         self.random_split(min_row, split + 1 , max_row, max_col)
-        return split
+        return (min_row + (max_row - min_row)//2, split)
     
 
     def random_split(self, min_row, min_col, max_row, max_col):
@@ -112,33 +112,35 @@ class DungeonGenerator:
                     self.dungeon[row][col] = DungeonSqr('.')
     
     def carve_corridors(self):
-        for (is_vert_split, split) in self.splits:
+        for (is_vert_split, (row, col)) in self.splits:
             
+            obj=None
             if is_vert_split:
                 continue
+            else:
+                # horizontal split ,so vertical corridor
+                start = row
+                # find where it hits non-empty
+                for i in range(row, 0, -1):
+                    if self.dungeon[i][col].tile == '#':
+                        start = i
+                    else:
+                        break
+                
+                end = None
+                for i in range(row, self.height):
+                    if self.dungeon[i][col].tile == '#':
+                        end = i
+                    else:
+                        break
+                if start and end:
+                    obj = Corridor(start, col, end-start+1, 1)
+                    self.corridors.append(obj)
             
-            # horizontal split ,so vertical corridor
-            start = split
-            # find where it hits non-empty
-            for c in range(split, 0):
-                if self.dungeon[c][split] != DungeonSqr('#'):
-                    start = c
-                else:
-                    break
-            
-            end = split
-            for c in range(split, self.height):
-                if self.dungeon[c][split] != DungeonSqr('#'):
-                    end = c
-                else:
-                    break
-            
-            obj = Corridor(start, split, end-start, 1)
-            self.corridors.append(obj)
-            
-            for row in range(obj.row, obj.row + obj.height):
-                for col in range(obj.col, obj.col + obj.width):
-                    self.dungeon[row][col] = DungeonSqr('c')
+            if obj:
+                for row in range(obj.row, obj.row + obj.height):
+                    for col in range(obj.col, obj.col + obj.width):
+                        self.dungeon[row][col] = DungeonSqr('c')
 
     def generate_map(self):
         self.random_split(1, 1, self.height - 1, self.width - 1)

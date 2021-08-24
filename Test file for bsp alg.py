@@ -116,7 +116,23 @@ class DungeonGenerator:
             
             obj=None
             if is_vert_split:
-                continue
+                start = col
+                # find where it hits non-empty
+                for i in range(col, 0, -1):
+                    if self.dungeon[row][i].tile == '#':
+                        start = i
+                    else:
+                        break
+                
+                end = None
+                for i in range(col, self.width):
+                    if self.dungeon[row][i].tile == '#':
+                        end = i
+                    else:
+                        break
+                if start and end:
+                    obj = Corridor(row, start, 1, end-start+1)
+                    self.corridors.append(obj)
             else:
                 # horizontal split ,so vertical corridor
                 start = row

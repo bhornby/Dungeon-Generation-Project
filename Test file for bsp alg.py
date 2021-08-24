@@ -25,6 +25,7 @@ class DungeonGenerator:
         self.width = width
         self.height = height
         self.leaves = [] #creating a list for each so we can split and add
+        self.corridors = []
         self.dungeon = []
         self.rooms = []
 
@@ -44,6 +45,7 @@ class DungeonGenerator:
         self.random_split(min_row, min_col, split, max_col)
         #split in the rows
         self.random_split(split + 1, min_col, max_row, max_col)
+        return split
         
 
     def split_on_vertical(self, min_row, min_col, max_row, max_col):        
@@ -51,6 +53,7 @@ class DungeonGenerator:
         self.random_split(min_row, min_col, max_row, split)
          #split in the cols
         self.random_split(min_row, split + 1 , max_row, max_col)
+        return split
     
 
     def random_split(self, min_row, min_col, max_row, max_col):
@@ -58,23 +61,26 @@ class DungeonGenerator:
         seg_height = max_row - min_row 
         seg_width = max_col - min_col
 
+        corridor = None
+        # boolean true for vertical and false for horizontal this is for use when making the corridor connections
         if seg_height < self.MAX and seg_width < self.MAX:
             self.leaves.append((min_row, min_col, max_row, max_col)) #adding a new leaf
             
         elif seg_height < self.MAX and seg_width >= self.MAX:
-            self.split_on_vertical(min_row, min_col, max_row, max_col)
+            corridor = (True, self.split_on_vertical(min_row, min_col, max_row, max_col))
             
         elif seg_height >= self.MAX and seg_width < self.MAX:
-            self.split_on_horizontal(min_row, min_col, max_row, max_col)
+            corridor = (False, self.split_on_horizontal(min_row, min_col, max_row, max_col))
             
             #depending on the value of max-row - min_row you can either get a vertical or horizontal row almost a 50/50 chance
         else:
             if random() < 0.5:
-                self.split_on_horizontal(min_row, min_col, max_row, max_col)
-                
+                corridor = (False, self.split_on_horizontal(min_row, min_col, max_row, max_col))
             else:
-                self.split_on_vertical(min_row, min_col, max_row, max_col)
+                corridor = (True, self.split_on_vertical(min_row, min_col, max_row, max_col))
         
+        if corridor:
+            self.corridors.append(corridor)
         #at the end of the random split you are left with the self.MAX number of leaves in the self.leaves list
           
     def carve_rooms(self):

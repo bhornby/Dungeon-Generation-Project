@@ -10,7 +10,7 @@ class DungeonSqr:
     def __init__(self, sqr):
         self.sqr = sqr
 
-    def get_ch(self):
+    def get_colheight(self):
         return self.sqr
 
 class Room:
@@ -102,7 +102,7 @@ class DungeonGenerator:
         for r in range(self.height):
             row = ''
             for c in range(self.width):
-                row += self.dungeon[r][c].get_ch()
+                row += self.dungeon[r][c].get_colheight()
             print(row)
 
 dungeon = DungeonGenerator(75, 40)

@@ -18,16 +18,24 @@ class Room:
         self.col = col
         self.height = height
         self.width = width
-        
+
+class Corridor:
+    def __init__(self, row, col, height, width):
+        self.row = row
+        self.col = col
+        self.height = height
+        self.width = width
+
 class DungeonGenerator:
     def __init__(self, width, height):
         self.MAX = 25 # Cutoff for when we want to stop splitting the tree
         self.width = width
         self.height = height
         self.leaves = [] #creating a list for each so we can split and add
-        self.corridors = []
+        self.splits = []
         self.dungeon = []
         self.rooms = []
+        self.corridors = []
 
         for height in range(self.height):
             row = []
@@ -61,26 +69,26 @@ class DungeonGenerator:
         seg_height = max_row - min_row 
         seg_width = max_col - min_col
 
-        corridor = None
+        split = None
         # boolean true for vertical and false for horizontal this is for use when making the corridor connections
         if seg_height < self.MAX and seg_width < self.MAX:
             self.leaves.append((min_row, min_col, max_row, max_col)) #adding a new leaf
             
         elif seg_height < self.MAX and seg_width >= self.MAX:
-            corridor = (True, self.split_on_vertical(min_row, min_col, max_row, max_col))
+            split = (True, self.split_on_vertical(min_row, min_col, max_row, max_col))
             
         elif seg_height >= self.MAX and seg_width < self.MAX:
-            corridor = (False, self.split_on_horizontal(min_row, min_col, max_row, max_col))
+            split = (False, self.split_on_horizontal(min_row, min_col, max_row, max_col))
             
             #depending on the value of max-row - min_row you can either get a vertical or horizontal row almost a 50/50 chance
         else:
             if random() < 0.5:
-                corridor = (False, self.split_on_horizontal(min_row, min_col, max_row, max_col))
+                split = (False, self.split_on_horizontal(min_row, min_col, max_row, max_col))
             else:
-                corridor = (True, self.split_on_vertical(min_row, min_col, max_row, max_col))
+                split = (True, self.split_on_vertical(min_row, min_col, max_row, max_col))
         
-        if corridor:
-            self.corridors.append(corridor)
+        if split:
+            self.splits.append(split)
         #at the end of the random split you are left with the self.MAX number of leaves in the self.leaves list
           
     def carve_rooms(self):
@@ -102,11 +110,41 @@ class DungeonGenerator:
             for row in range(room_start_row, room_start_row + room_height):
                 for col in range(room_start_col, room_start_col + room_width):
                     self.dungeon[row][col] = DungeonSqr('.')
+    
+    def carve_corridors(self):
+        for (is_vert_split, split) in self.splits:
+            
+            if is_vert_split:
+                continue
+            
+            # horizontal split ,so vertical corridor
+            start = split
+            # find where it hits non-empty
+            for c in range(split, 0):
+                if self.dungeon[c][split] != DungeonSqr('#'):
+                    start = c
+                else:
+                    break
+            
+            end = split
+            for c in range(split, self.height):
+                if self.dungeon[c][split] != DungeonSqr('#'):
+                    end = c
+                else:
+                    break
+            
+            obj = Corridor(start, split, end-start, 1)
+            self.corridors.append(obj)
+            
+            for row in range(obj.row, obj.row + obj.height):
+                for col in range(obj.col, obj.col + obj.width):
+                    self.dungeon[row][col] = DungeonSqr('c')
 
     def generate_map(self):
         self.random_split(1, 1, self.height - 1, self.width - 1)
         # - 1 from the height and the width to allow for full boarder walls
         self.carve_rooms()
+        self.carve_corridors()
 
     def print_map(self):
         for r in range(self.height):

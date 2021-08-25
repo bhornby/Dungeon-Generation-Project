@@ -12,8 +12,8 @@ COLOUR_DARK_WALL = (0, 0, 100)
 COLOUR_DARK_GROUND = (50, 50, 150)
 
 # core attributes
-width = 10
-height = 10
+width = 40
+height = 40
 speed = 5
 numcols = 25
 numrows = 20

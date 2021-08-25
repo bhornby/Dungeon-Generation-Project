@@ -176,9 +176,7 @@ class DungeonGenerator:
                 row += self.dungeon[r][c].get_colheight() #either adding in a # = wall or a | = floor space
             print(row)
 
-dungeon = DungeonGenerator(70,70)
-dungeon.generate_map()
-dungeon.print_map()
+
 
     
     

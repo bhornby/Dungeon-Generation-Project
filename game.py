@@ -12,14 +12,14 @@ COLOUR_DARK_WALL = (0, 0, 100)
 COLOUR_DARK_GROUND = (50, 50, 150)
 
 # core attributes
-width = 40
-height = 40
+width = 10
+height = 10
 speed = 5
 numcols = 25
 numrows = 20
 
 #black screen
-screen_size = (1000,1000)
+screen_size = (1000,720)
 
 screen = pygame.display.set_mode(screen_size)
 
@@ -378,7 +378,7 @@ def main_loop():
     all_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
     floor_group = pygame.sprite.Group()
-    dungeon = DungeonGenerator(width * (numcols), height * numrows)
+    dungeon = DungeonGenerator(70,70)
     dungeon.generate_map()
     render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group)
     my_player = Player(YELLOW,width,height,speed, dungeon,wall_group)

@@ -1,6 +1,11 @@
 COLOUR_DARK_WALL = (0, 0, 100)
 COLOUR_DARK_GROUND = (50, 50, 150)
 
+
+#change col and row to x and y
+#prot over to pygame 
+
+
 from random import random
 from random import randrange
 from random import choice

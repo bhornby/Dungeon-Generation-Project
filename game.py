@@ -8,16 +8,18 @@ BLACK = (0,0,0)
 YELLOW = (255,255,0)
 RED = (255, 0, 0)
 LIGHT_RED = (255, 127, 127)
+COLOUR_DARK_WALL = (0, 0, 100)
+COLOUR_DARK_GROUND = (50, 50, 150)
 
 # core attributes
-width = 10
-height = 10
+width = 40
+height = 40
 speed = 5
 numcols = 25
 numrows = 20
 
 #black screen
-screen_size = (width * (numcols + 5), height * numrows)
+screen_size = (1000,1000)
 
 screen = pygame.display.set_mode(screen_size)
 
@@ -97,13 +99,16 @@ class Player(pygame.sprite.Sprite):
         while not fini and i < dungeon.width:
             j = 0
             while not fini and j < dungeon.height:
-                if dungeon.dungeon[i][j].tile == '#':
-                    self.rect.x,self.rect.y  = (i)*width,(j)*height
+                if dungeon.dungeon[i][j].tile != '#':
+                    self.rect.x  = (i) * width
+                    self.rect.y  = (j) * height
                     fini = True
                 j += 1     #same as j = j + 1
             i += 1
+            
         self.old_x =  self.rect.x
         self.old_y = self.rect.y
+        
         
     def update(self):
         

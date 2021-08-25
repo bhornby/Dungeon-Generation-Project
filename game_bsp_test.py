@@ -60,7 +60,7 @@ def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group):
                 my_wall = Wall(width,height,i*width,j*height)
                 all_sprite_group.add(my_wall)
                 wall_group.add(my_wall)
-            elif v == ".":
+            elif v == "." or v == "c":
                 my_floor = Floor(width,height,i*width,j*height)
                 all_sprite_group.add(my_floor)
                 floor_group.add(my_floor)

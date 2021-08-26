@@ -42,14 +42,12 @@ class DungeonGenerator:
         self.rooms = []
         self.corridors = []
 
-        for y in range(self.height):
-            row = []
-            for x in range(self.width):
-                row.append(DungeonSqr('#'))
-                
-                #filling out the dungeon with #'s
-
-            self.tiles.append(row)
+        
+        for x in range(self.width):       
+            col = []
+            for y in range(self.height):
+                col.append(DungeonSqr('#'))
+            self.tiles.append(col)
         
     def split_on_horizontal(self, min_row, min_col, max_row, max_col):
         #using the choice module from random allows ease of code writing no need for large array and item selection code

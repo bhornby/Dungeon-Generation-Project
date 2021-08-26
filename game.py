@@ -46,8 +46,8 @@ class Player(pygame.sprite.Sprite):
                 if v == "#":
                     continue
                 elif v == ".":
-                    self.rect.x  = (j) * tile_size + offset_x % tile_size  
-                    self.rect.y  = (i) * tile_size + offset_y % tile_size
+                    self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
+                    self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
                     
 #                 if self.rect.x > windown_width - tile_size:
 #                     offset_x +=

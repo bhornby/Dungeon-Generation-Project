@@ -52,30 +52,33 @@ class Player(pygame.sprite.Sprite):
            
         self.old_x = self.rect.x
         self.old_y = self.rect.y
+        self.window_width = window_width
+        self.window_height = window_height
+        self.tile_size = tile_size
            
-    def shift(self, window_width, window_height, tile_size):
+    def shift(self):
         global offset_x
         global offset_y
         
-        if self.rect.x > window_width - tile_size:
-            self.speed_x = 0
-            offset_x = offset_x + tile_size
+        step_size = 5
+        if self.rect.x > self.window_width - self.tile_size:
+            offset_x += step_size
+            self.rect.x -= step_size
                     
-        elif self.rect.x < offset_x + tile_size:
-            self.speed_x = 0
-            offset_x = offset_x - tile_size
+        elif self.rect.x < self.tile_size:
+            offset_x -= step_size
+            self.rect.x += step_size
         
-        elif self.rect.y > window_height - tile_size:
-            self.speed_y = 0
-            offset_y = offset_y + tile_size
+        elif self.rect.y > self.window_height - self.tile_size:
+            offset_y +=  step_size
+            self.rect.y -= step_size
             
-        elif self.rect.y < offset_y + tile_size:
-            self.speed_y = 0
-            offset_y = offset_y - tile_size
-       
+        elif self.rect.y < self.tile_size:
+            offset_y -= step_size
+            self.rect.y += step_size
+
         
-    def update(self):
-        
+    def update(self):     
         self.rect.x = self.rect.x + self.speed_x
         self.rect.y = self.rect.y + self.speed_y
         
@@ -86,6 +89,7 @@ class Player(pygame.sprite.Sprite):
             self.speed_x = 0
             self.speed_y = 0
         
+        self.shift()
         self.old_x = self.rect.x
         self.old_y = self.rect.y 
         
@@ -97,10 +101,10 @@ class Player(pygame.sprite.Sprite):
 def render_pygame_map(dungeon, wall_img, floor_img, tile_size, offset_x, offset_y, window_width, window_height):        
     walls = []
     floors = []
-    for i in range(offset_y // tile_size, window_height // tile_size):
-        for j in range(offset_x // tile_size, window_width // tile_size):
-            x = j*tile_size + offset_x % tile_size - offset_x
-            y = i*tile_size + offset_y % tile_size - offset_y
+    for i in range(offset_y // tile_size, (offset_y + window_height) // tile_size):
+        for j in range(offset_x // tile_size, (offset_x + window_width) // tile_size):
+            x = j * tile_size - offset_x
+            y = i * tile_size - offset_y
             v = dungeon.tiles[j][i].tile
             if v == "#":
                 walls.append(Wall(wall_img, x, y))
@@ -115,8 +119,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     speed = 5
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("stonebrick.png").convert(),(tile_size,tile_size))
     FLOOR_IMAGE = pygame.transform.scale(pygame.image.load("floor.png").convert(),(tile_size,tile_size))
-    window_width = numcols//2 * tile_size
-    window_height = numrows//2 * tile_size
+    window_width = numcols * tile_size
+    window_height = numrows * tile_size
     background_sprite_group = pygame.sprite.Group()
     foreground_sprite_group = pygame.sprite.Group()
 
@@ -127,13 +131,12 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     foreground_sprite_group.add(my_player)
     
     
-    #exit game falg set to false
+    #exit game flag set to false
     done = False
     old_walls = []
     old_floors = []
     while not done:
         #user input
-        my_player.shift(window_width, window_height, tile_size)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -155,7 +158,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,0)
         
-        (walls, floors) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, tile_size,offset_x, offset_y, window_width, window_height)
+        (walls, floors) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, tile_size, offset_x, offset_y, window_width, window_height)
         
         # TODO remove old walls and floors, then add new ones and reset old ones
         

@@ -50,7 +50,7 @@ class DungeonGenerator:
                 #filling out the dungeon with #'s
 
             self.dungeon.append(row)
-    
+        
     def split_on_horizontal(self, min_row, min_col, max_row, max_col):
         #using the choice module from random allows ease of code writing no need for large array and item selection code
         #choice provieds the random split it is the wild card
@@ -164,7 +164,7 @@ class DungeonGenerator:
                         self.dungeon[row][col] = DungeonSqr('c')
 
     def generate_map(self):
-        self.random_split(1, 1, self.height - 1, self.width - 1)
+        self.random_split(1, 1, self.height - 5, self.width - 5)
         # - 1 from the height and the width to allow for full boarder walls
         self.carve_rooms()
         self.carve_corridors()

@@ -38,7 +38,7 @@ class DungeonGenerator:
         self.height = height
         self.leaves = [] #creating a list for each so we can split and add
         self.splits = []
-        self.dungeon = []
+        self.tiles = []
         self.rooms = []
         self.corridors = []
 
@@ -49,7 +49,7 @@ class DungeonGenerator:
                 
                 #filling out the dungeon with #'s
 
-            self.dungeon.append(row)
+            self.tiles.append(row)
         
     def split_on_horizontal(self, min_row, min_col, max_row, max_col):
         #using the choice module from random allows ease of code writing no need for large array and item selection code
@@ -114,7 +114,7 @@ class DungeonGenerator:
             
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
-                    self.dungeon[y][x] = DungeonSqr('.')
+                    self.tiles[y][x] = DungeonSqr('.')
     
     def carve_corridors(self):
         for (is_vert_split, (y, x)) in self.splits:
@@ -124,14 +124,14 @@ class DungeonGenerator:
                 start = x
                 # find where it hits non-empty
                 for i in range(x, 0, -1):
-                    if self.dungeon[y][i].tile == '#':
+                    if self.tiles[y][i].tile == '#':
                         start = i
                     else:
                         break
                 
                 end = None
                 for i in range(x, self.width):
-                    if self.dungeon[y][i].tile == '#':
+                    if self.tiles[y][i].tile == '#':
                         end = i
                     else:
                         break
@@ -143,14 +143,14 @@ class DungeonGenerator:
                 start = y
                 # find where it hits non-empty
                 for i in range(y, 0, -1):
-                    if self.dungeon[i][x].tile == '#':
+                    if self.tiles[i][x].tile == '#':
                         start = i
                     else:
                         break
                 
                 end = None
                 for i in range(y, self.height):
-                    if self.dungeon[i][x].tile == '#':
+                    if self.tiles[i][x].tile == '#':
                         end = i
                     else:
                         break
@@ -161,7 +161,7 @@ class DungeonGenerator:
             if obj:
                 for y in range(obj.y, obj.y + obj.height):
                     for x in range(obj.x, obj.x + obj.width):
-                        self.dungeon[y][x] = DungeonSqr('c')
+                        self.tiles[y][x] = DungeonSqr('c')
 
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)
@@ -173,7 +173,7 @@ class DungeonGenerator:
         for r in range(self.height):
             row = ''
             for c in range(self.width):
-                row += self.dungeon[r][c].get_colheight() #either adding in a # = wall or a | = floor space
+                row += self.tiles[r][c].get_colheight() #either adding in a # = wall or a | = floor space
             print(row)
 
 

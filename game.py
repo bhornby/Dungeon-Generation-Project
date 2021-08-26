@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         while not fini and i < dungeon.width:
             j = 0
             while not fini and j < dungeon.height:
-                if dungeon.dungeon[j][j].tile != '#':
+                if dungeon.tiles[j][j].tile != '#':
                     self.rect.x  = (j) * width  
                     self.rect.y  = (i) * height  
                     fini = True
@@ -80,7 +80,7 @@ def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_s
         for j in range(dungeon.width):
             x = j*tile_size
             y = i*tile_size
-            v = dungeon.dungeon[i][j].tile
+            v = dungeon.tiles[i][j].tile
             if v == "#":
                 my_wall = Wall(WALL_IMAGE, x, y)
                 all_sprite_group.add(my_wall)

@@ -72,14 +72,14 @@ class Player(pygame.sprite.Sprite):
         self.speed_x = x
         self.speed_y = y
 
-def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size):        
+def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size, offset_x, offset_y, window_width, window_height):        
     v = None
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("stonebrick.png").convert(),(tile_size,tile_size))
     FlOOR_IMAGE = pygame.transform.scale(pygame.image.load("floor.png").convert(),(tile_size,tile_size))
-    for i in range(dungeon.height):
-        for j in range(dungeon.width):
-            x = j*tile_size
-            y = i*tile_size
+    for i in range(offset_y // tile_size, window_height // tile_size):
+        for j in range(offset_x // tile_size, window_width // tile_size):
+            x = j*tile_size + offset_x % tile_size
+            y = i*tile_size + offset_y % tile_size
             v = dungeon.tiles[j][i].tile
             if v == "#":
                 my_wall = Wall(WALL_IMAGE, x, y)
@@ -98,11 +98,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     all_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
     floor_group = pygame.sprite.Group()
-    dungeon = DungeonGenerator(numrows*10, numcols*10)
+    dungeon = DungeonGenerator(numcols*10,numrows*10)
     dungeon.generate_map()
-    render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size)
-    #my_player = Player(YELLOW,tile_size,tile_size,speed, dungeon,wall_group)
-    #all_sprite_group.add(my_player)
+    render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size, 100, 200, 800, 600)
+    my_player = Player(YELLOW,tile_size,tile_size,speed, dungeon,wall_group)
+    all_sprite_group.add(my_player)
     
     
     #exit game falg set to false

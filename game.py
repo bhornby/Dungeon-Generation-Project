@@ -5,6 +5,8 @@ from bsp_alg import DungeonGenerator
 
 YELLOW = (255,255,0)
 BLACK = (0,0,0)
+offset_x = 80
+offset_y = 40
 
 
     
@@ -38,8 +40,7 @@ class Player(pygame.sprite.Sprite):
         
         #set position of player need to make it so the player starts in a spot with no wall
         self.rect = self.image.get_rect()
-        
-        
+    
         for i in range(offset_y // tile_size, window_height // tile_size):
             for j in range(offset_x // tile_size, window_width // tile_size):
                 v = dungeon.tiles[j][i].tile
@@ -48,13 +49,30 @@ class Player(pygame.sprite.Sprite):
                 elif v == ".":
                     self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
                     self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
-                    
-#                 if self.rect.x > windown_width - tile_size:
-#                     offset_x +=
-#                        
-        self.old_x =  self.rect.x
+           
+        self.old_x = self.rect.x
         self.old_y = self.rect.y
+           
+    def shift(self, window_width, window_height, tile_size):
+        global offset_x
+        global offset_y
         
+        if self.rect.x > window_width - tile_size:
+            self.speed_x = 0
+            offset_x = offset_x + tile_size
+                    
+        elif self.rect.x < offset_x + tile_size:
+            self.speed_x = 0
+            offset_x = offset_x - tile_size
+        
+        elif self.rect.y > window_height - tile_size:
+            self.speed_y = 0
+            offset_y = offset_y + tile_size
+            
+        elif self.rect.y < offset_y + tile_size:
+            self.speed_y = 0
+            offset_y = offset_y - tile_size
+       
         
     def update(self):
         
@@ -67,9 +85,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.y =  self.old_y 
             self.speed_x = 0
             self.speed_y = 0
-
+        
+        self.old_x = self.rect.x
         self.old_y = self.rect.y 
-        self.old_x = self.rect.x 
+        
             
     def player_set_speed(self,x,y):
         self.speed_x = x
@@ -94,13 +113,10 @@ def render_pygame_map(dungeon, wall_img, floor_img, tile_size, offset_x, offset_
                 
 def main_loop(screen, clock, tile_size, numrows, numcols):
     speed = 5
-    offset_x = 80
-    offset_y = 40
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("stonebrick.png").convert(),(tile_size,tile_size))
     FLOOR_IMAGE = pygame.transform.scale(pygame.image.load("floor.png").convert(),(tile_size,tile_size))
     window_width = numcols//2 * tile_size
     window_height = numrows//2 * tile_size
-    
     background_sprite_group = pygame.sprite.Group()
     foreground_sprite_group = pygame.sprite.Group()
 
@@ -117,6 +133,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     old_floors = []
     while not done:
         #user input
+        my_player.shift(window_width, window_height, tile_size)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -139,6 +156,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
                     my_player.player_set_speed(0,0)
         
         (walls, floors) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, tile_size,offset_x, offset_y, window_width, window_height)
+        
         # TODO remove old walls and floors, then add new ones and reset old ones
         
         background_sprite_group.remove(old_walls)

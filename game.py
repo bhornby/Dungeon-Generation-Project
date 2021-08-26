@@ -38,16 +38,16 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         
         fini = False
-        y = 0
-        while not fini and y < dungeon.height:
-            x = 0
-            while not fini and x < dungeon.width:
-                if dungeon.dungeon[x][y].tile != '#':
-                    self.rect.x  = (x) * width  
-                    self.rect.y  = (y) * height  
+        i = 0
+        while not fini and i < dungeon.width:
+            j = 0
+            while not fini and j < dungeon.height:
+                if dungeon.dungeon[j][j].tile != '#':
+                    self.rect.x  = (j) * width  
+                    self.rect.y  = (i) * height  
                     fini = True
-                x += 1     #same as j = j + 1
-            y += 1
+                j += 1     #same as j = j + 1
+            i += 1
             
         self.old_x =  self.rect.x
         self.old_y = self.rect.y
@@ -90,7 +90,7 @@ def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_s
                 all_sprite_group.add(my_floor)
                 floor_group.add(my_floor)
                 #end if
-        #next colum 
+        #next colum
     #next row
                 
 def main_loop(screen, clock, tile_size, numrows, numcols):
@@ -101,8 +101,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon = DungeonGenerator(numrows*10, numcols*10)
     dungeon.generate_map()
     render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size)
-    my_player = Player(YELLOW,tile_size,tile_size,speed, dungeon,wall_group)
-    all_sprite_group.add(my_player)
+    #my_player = Player(YELLOW,tile_size,tile_size,speed, dungeon,wall_group)
+    #all_sprite_group.add(my_player)
     
     
     #exit game falg set to false

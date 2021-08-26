@@ -12,14 +12,13 @@ COLOUR_DARK_GROUND = (50, 50, 150)
 clock = pygame.time.Clock()
 
 # core attributes
-tile_size = 10
+tile_size = 40
 
 numrows = 18
 numcols = 25
 
 #black screen
-screen_size = (1000,720)
-'''tile_size * numcols, tile_size * numrows'''
+screen_size = (tile_size * numcols, tile_size * numrows)
 
 screen = pygame.display.set_mode(screen_size)
 

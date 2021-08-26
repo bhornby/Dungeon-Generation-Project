@@ -6,10 +6,7 @@ from bsp_alg import DungeonGenerator
 YELLOW = (255,255,0)
 BLACK = (0,0,0)
 
-offset_x = -100
-offset_y = -200
-window_width = 1000
-window_height = 720
+
     
 class Wall(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
@@ -50,8 +47,11 @@ class Player(pygame.sprite.Sprite):
                     continue
                 elif v == ".":
                     self.rect.x  = (j) * tile_size + offset_x % tile_size  
-                    self.rect.y  = (i) * tile_size + offset_y % tile_size 
-                       
+                    self.rect.y  = (i) * tile_size + offset_y % tile_size
+                    
+#                 if self.rect.x > windown_width - tile_size:
+#                     offset_x +=
+#                        
         self.old_x =  self.rect.x
         self.old_y = self.rect.y
         
@@ -76,13 +76,12 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = y
 
 def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size, offset_x, offset_y, window_width, window_height):        
-    v = None
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("stonebrick.png").convert(),(tile_size,tile_size))
     FlOOR_IMAGE = pygame.transform.scale(pygame.image.load("floor.png").convert(),(tile_size,tile_size))
     for i in range(offset_y // tile_size, window_height // tile_size):
         for j in range(offset_x // tile_size, window_width // tile_size):
-            x = j*tile_size + offset_x % tile_size
-            y = i*tile_size + offset_y % tile_size
+            x = j*tile_size + offset_x % tile_size - offset_x
+            y = i*tile_size + offset_y % tile_size - offset_y
             v = dungeon.tiles[j][i].tile
             if v == "#":
                 my_wall = Wall(WALL_IMAGE, x, y)
@@ -98,6 +97,10 @@ def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_s
                 
 def main_loop(screen, clock, tile_size, numrows, numcols):
     speed = 5
+    offset_x = 80
+    offset_y = 40
+    window_width = numcols//2 * tile_size
+    window_height = numrows//2 * tile_size
     all_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
     floor_group = pygame.sprite.Group()

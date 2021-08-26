@@ -24,31 +24,29 @@ class Floor(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite): 
-    def __init__(self,colour,width,height,speed,dungeon,wall_group):
+    def __init__(self,colour,tile_size,speed,dungeon,wall_group,offset_x, offset_y, window_width, window_height):
         super().__init__()
         
         #set player dimentions
         self.wall_group = wall_group
         self.speed_x = 0
         self.speed_y = 0
-        self.image = pygame.Surface([width,height])
+        self.image = pygame.Surface([tile_size,tile_size])
         self.image.fill(colour)
         
         #set position of player need to make it so the player starts in a spot with no wall
         self.rect = self.image.get_rect()
         
-        fini = False
-        i = 0
-        while not fini and i < dungeon.width:
-            j = 0
-            while not fini and j < dungeon.height:
-                if dungeon.tiles[j][i].tile != '#':
-                    self.rect.x  = (j) * width  
-                    self.rect.y  = (i) * height  
-                    fini = True
-                j += 1     #same as j = j + 1
-            i += 1
-            
+        
+        for i in range(offset_y // tile_size, window_height // tile_size):
+            for j in range(offset_x // tile_size, window_width // tile_size):
+                v = dungeon.tiles[j][i].tile
+                if v == "#":
+                    continue
+                elif v == ".":
+                    self.rect.x  = (j) * tile_size + offset_x % tile_size  
+                    self.rect.y  = (i) * tile_size + offset_y % tile_size 
+                       
         self.old_x =  self.rect.x
         self.old_y = self.rect.y
         
@@ -101,7 +99,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon = DungeonGenerator(numcols*10,numrows*10)
     dungeon.generate_map()
     render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size, 100, 200, 800, 600)
-    my_player = Player(YELLOW,tile_size,tile_size,speed, dungeon,wall_group)
+    my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,100, 200, 800, 600)
     all_sprite_group.add(my_player)
     
     

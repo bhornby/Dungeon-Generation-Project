@@ -114,7 +114,7 @@ class DungeonGenerator:
             
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
-                    self.tiles[y][x] = DungeonSqr('.')
+                    self.tiles[x][y] = DungeonSqr('.')
     
     def carve_corridors(self):
         for (is_vert_split, (y, x)) in self.splits:
@@ -124,14 +124,14 @@ class DungeonGenerator:
                 start = x
                 # find where it hits non-empty
                 for i in range(x, 0, -1):
-                    if self.tiles[y][i].tile == '#':
+                    if self.tiles[i][y].tile == '#':
                         start = i
                     else:
                         break
                 
                 end = None
                 for i in range(x, self.width):
-                    if self.tiles[y][i].tile == '#':
+                    if self.tiles[i][y].tile == '#':
                         end = i
                     else:
                         break
@@ -143,14 +143,14 @@ class DungeonGenerator:
                 start = y
                 # find where it hits non-empty
                 for i in range(y, 0, -1):
-                    if self.tiles[i][x].tile == '#':
+                    if self.tiles[x][i].tile == '#':
                         start = i
                     else:
                         break
                 
                 end = None
                 for i in range(y, self.height):
-                    if self.tiles[i][x].tile == '#':
+                    if self.tiles[x][i].tile == '#':
                         end = i
                     else:
                         break
@@ -161,7 +161,7 @@ class DungeonGenerator:
             if obj:
                 for y in range(obj.y, obj.y + obj.height):
                     for x in range(obj.x, obj.x + obj.width):
-                        self.tiles[y][x] = DungeonSqr('c')
+                        self.tiles[x][y] = DungeonSqr('c')
 
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)
@@ -170,10 +170,10 @@ class DungeonGenerator:
         self.carve_corridors()
 
     def print_map(self):
-        for r in range(self.height):
+        for y in range(self.height):
             row = ''
-            for c in range(self.width):
-                row += self.tiles[r][c].get_colheight() #either adding in a # = wall or a | = floor space
+            for x in range(self.width):
+                row += self.tiles[x][y].get_colheight() #either adding in a # = wall or a | = floor space
             print(row)
 
 

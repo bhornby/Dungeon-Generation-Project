@@ -42,9 +42,9 @@ class DungeonGenerator:
         self.rooms = []
         self.corridors = []
 
-        for height in range(self.height):
+        for y in range(self.height):
             row = []
-            for width in range(self.width):
+            for x in range(self.width):
                 row.append(DungeonSqr('#'))
                 
                 #filling out the dungeon with #'s

@@ -78,13 +78,15 @@ def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_s
     FlOOR_IMAGE = pygame.transform.scale(pygame.image.load("floor.png").convert(),(tile_size,tile_size))
     for i in range(dungeon.height):
         for j in range(dungeon.width):
+            x = j*tile_size
+            y = i*tile_size
             v = dungeon.dungeon[i][j].tile
             if v == "#":
-                my_wall = Wall(WALL_IMAGE, j*tile_size,i*tile_size)
+                my_wall = Wall(WALL_IMAGE, x, y)
                 all_sprite_group.add(my_wall)
                 wall_group.add(my_wall)
             elif v == "." or v == "c":
-                my_floor = Floor(FlOOR_IMAGE,j*tile_size,i*tile_size)
+                my_floor = Floor(FlOOR_IMAGE, x, y)
                 all_sprite_group.add(my_floor)
                 floor_group.add(my_floor)
                 #end if
@@ -96,11 +98,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     all_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
     floor_group = pygame.sprite.Group()
-    dungeon = DungeonGenerator(numrows, numcols)
+    dungeon = DungeonGenerator(numrows*10, numcols*10)
     dungeon.generate_map()
     render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group, tile_size)
-    my_player = Player(YELLOW,tile_size,tile_size,speed, dungeon,wall_group)
-    all_sprite_group.add(my_player)
+    #my_player = Player(YELLOW,tile_size,tile_size,speed, dungeon,wall_group)
+    #all_sprite_group.add(my_player)
     
     
     #exit game falg set to false

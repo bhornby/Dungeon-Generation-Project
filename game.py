@@ -16,16 +16,17 @@ width = 40
 height = 40
 speed = 5
 numcols = 25
-numrows = 20
+numrows = 18
 
 #black screen
-screen_size = (1000,720)
+screen_size = (width * numcols, height *numrows)
 
 screen = pygame.display.set_mode(screen_size)
 
 #screen refresh rate
 clock = pygame.time.Clock()
-    
+
+scroll = [0,0] #contains the scroll on the x and y
     
 class Wall(pygame.sprite.Sprite):
     
@@ -100,8 +101,8 @@ class Player(pygame.sprite.Sprite):
             j = 0
             while not fini and j < dungeon.height:
                 if dungeon.dungeon[i][j].tile != '#':
-                    self.rect.x  = (i) * width
-                    self.rect.y  = (j) * height
+                    self.rect.x  = (i) * width  
+                    self.rect.y  = (j) * height  
                     fini = True
                 j += 1     #same as j = j + 1
             i += 1
@@ -128,7 +129,6 @@ class Player(pygame.sprite.Sprite):
     def player_set_speed(self,x,y):
         self.speed_x = x
         self.speed_y = y
-        
 
 def draw_text(text, font, color, surface):
     textobj = font.render(text, 1, color)
@@ -355,7 +355,7 @@ def main_menu():
             
         pygame.display.update()
         clock.tick(60)
-        
+
 def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group):        
     v = None
     
@@ -363,7 +363,7 @@ def render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group):
         for j in range(dungeon.width):
             v = dungeon.dungeon[i][j].tile
             if v == "#":
-                my_wall = Wall(width,height,i*width,j*height)
+                my_wall = Wall(width,height, i*width,j*height)
                 all_sprite_group.add(my_wall)
                 wall_group.add(my_wall)
             elif v == "." or v == "c":
@@ -378,7 +378,7 @@ def main_loop():
     all_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
     floor_group = pygame.sprite.Group()
-    dungeon = DungeonGenerator(70,70)
+    dungeon = DungeonGenerator(width * numcols, height *numrows)
     dungeon.generate_map()
     render_pygame_map(dungeon, floor_group, wall_group, all_sprite_group)
     my_player = Player(YELLOW,width,height,speed, dungeon,wall_group)
@@ -389,6 +389,7 @@ def main_loop():
     done = False
     while not done:
         #user input
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
@@ -396,6 +397,9 @@ def main_loop():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:#if left key is pressed
                     my_player.player_set_speed(-1,0)
+                    for sprite in all_sprite_group:
+                        sprite.rect.x = sprite.rect.x - my_player.speed_x
+                    
                 elif event.key == pygame.K_RIGHT:
                     my_player.player_set_speed(1,0)
                 elif event.key == pygame.K_UP:

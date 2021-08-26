@@ -18,16 +18,16 @@ class DungeonSqr:
         return self.tile
 
 class Room:
-    def __init__(self, row, col, height, width):
-        self.row = row
-        self.col = col
+    def __init__(self, y, x, height, width):
+        self.x = x
+        self.y = y
         self.height = height
         self.width = width
 
 class Corridor:
-    def __init__(self, row, col, height, width):
-        self.row = row
-        self.col = col
+    def __init__(self, y, x, height, width):
+        self.x = x
+        self.y = y
         self.height = height
         self.width = width
 
@@ -159,8 +159,8 @@ class DungeonGenerator:
                     self.corridors.append(obj)
             
             if obj:
-                for row in range(obj.row, obj.row + obj.height):
-                    for col in range(obj.col, obj.col + obj.width):
+                for row in range(obj.y, obj.y + obj.height):
+                    for col in range(obj.x, obj.x + obj.width):
                         self.dungeon[row][col] = DungeonSqr('c')
 
     def generate_map(self):

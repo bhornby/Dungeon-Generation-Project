@@ -21,15 +21,15 @@ class Room:
     def __init__(self, x, y,width, height):
         self.x = x
         self.y = y
-        self.height = height
         self.width = width
+        self.height = height
 
 class Corridor:
-    def __init__(self, y, x, height, width):
+    def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
-        self.height = height
         self.width = width
+        self.height = height
 
 class DungeonGenerator:
     def __init__(self, width, height):
@@ -117,51 +117,51 @@ class DungeonGenerator:
                     self.dungeon[y][x] = DungeonSqr('.')
     
     def carve_corridors(self):
-        for (is_vert_split, (row, col)) in self.splits:
+        for (is_vert_split, (y, x)) in self.splits:
             
             obj=None
             if is_vert_split:
-                start = col
+                start = x
                 # find where it hits non-empty
-                for i in range(col, 0, -1):
-                    if self.dungeon[row][i].tile == '#':
+                for i in range(x, 0, -1):
+                    if self.dungeon[y][i].tile == '#':
                         start = i
                     else:
                         break
                 
                 end = None
-                for i in range(col, self.width):
-                    if self.dungeon[row][i].tile == '#':
+                for i in range(x, self.width):
+                    if self.dungeon[y][i].tile == '#':
                         end = i
                     else:
                         break
                 if start and end:
-                    obj = Corridor(row, start, 1, end-start+1)
+                    obj = Corridor(start, y, end-start+1, 1)
                     self.corridors.append(obj)
             else:
                 # horizontal split ,so vertical corridor
-                start = row
+                start = y
                 # find where it hits non-empty
-                for i in range(row, 0, -1):
-                    if self.dungeon[i][col].tile == '#':
+                for i in range(y, 0, -1):
+                    if self.dungeon[i][x].tile == '#':
                         start = i
                     else:
                         break
                 
                 end = None
-                for i in range(row, self.height):
-                    if self.dungeon[i][col].tile == '#':
+                for i in range(y, self.height):
+                    if self.dungeon[i][x].tile == '#':
                         end = i
                     else:
                         break
                 if start and end:
-                    obj = Corridor(start, col, end-start+1, 1)
+                    obj = Corridor(x, start, 1, end-start+1)
                     self.corridors.append(obj)
             
             if obj:
-                for row in range(obj.y, obj.y + obj.height):
-                    for col in range(obj.x, obj.x + obj.width):
-                        self.dungeon[row][col] = DungeonSqr('c')
+                for y in range(obj.y, obj.y + obj.height):
+                    for x in range(obj.x, obj.x + obj.width):
+                        self.dungeon[y][x] = DungeonSqr('c')
 
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)

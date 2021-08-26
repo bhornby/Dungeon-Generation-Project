@@ -18,7 +18,7 @@ class DungeonSqr:
         return self.tile
 
 class Room:
-    def __init__(self, y, x, height, width):
+    def __init__(self, x, y,width, height):
         self.x = x
         self.y = y
         self.height = height
@@ -107,14 +107,14 @@ class DungeonGenerator:
             # available section.
             room_width = round(randrange(40, 90) / 100 * section_width)
             room_height = round(randrange(40, 90) / 100 * section_height)
-            room_start_row = leaf[0] + round(randrange(0, 100) / 100 * (section_height - room_height))
-            room_start_col = leaf[1] + round(randrange(0, 100) / 100 * (section_width - room_width))
+            room_start_y = leaf[0] + round(randrange(0, 100) / 100 * (section_height - room_height))
+            room_start_x = leaf[1] + round(randrange(0, 100) / 100 * (section_width - room_width))
     
-            self.rooms.append(Room(room_start_row, room_start_col, room_height, room_width))
+            self.rooms.append(Room(room_start_x, room_start_y, room_width, room_height))
             
-            for row in range(room_start_row, room_start_row + room_height):
-                for col in range(room_start_col, room_start_col + room_width):
-                    self.dungeon[row][col] = DungeonSqr('.')
+            for y in range(room_start_y, room_start_y + room_height):
+                for x in range(room_start_x, room_start_x + room_width):
+                    self.dungeon[y][x] = DungeonSqr('.')
     
     def carve_corridors(self):
         for (is_vert_split, (row, col)) in self.splits:

@@ -112,16 +112,13 @@ class MiniMap(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = window_width - self.width - 10
         self.rect.y = 10
-        
-        
-        
         for x in range(self.width):       
             col = []
             for y in range(self.height):
                 col.append('#')
             self.revealed.append(col)        
         
-    def reveal(self, dungeon, tile_size, offset_x, offset_y, window_width, window_height):
+    def reveal(self, dungeon, tile_size, offset_x, offset_y, window_width, window_height,player_x, player_y):
         colour = None
         a = ((offset_y // tile_size))
         b = (((offset_y + window_height) // tile_size)) + 1
@@ -138,9 +135,8 @@ class MiniMap(pygame.sprite.Sprite):
                     colour = COLOUR_DARK_WALL
                 gfxdraw.pixel(self.image, j, i, colour)
         
-                
-                
-                    
+        gfxdraw.pixel(self.image, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
+                             
                     
 def render_pygame_map(dungeon, wall_img, floor_img, tile_size, offset_x, offset_y, window_width, window_height):        
     walls = []
@@ -210,7 +206,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
                     my_player.player_set_speed(0,0)
         
         (walls, floors) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, tile_size, offset_x, offset_y, window_width, window_height)
-        dungeon_mini.reveal(dungeon, tile_size, offset_x, offset_y, window_width, window_height)
+        dungeon_mini.reveal(dungeon, tile_size, offset_x, offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
         # TODO remove old walls and floors, then add new ones and reset old ones
         
         background_sprite_group.remove(old_walls)

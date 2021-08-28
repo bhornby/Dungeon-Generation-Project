@@ -106,17 +106,13 @@ class MiniMap(pygame.sprite.Sprite):
         super().__init__()
         self.width = width
         self.height = height
-        self.revealed = []
-        self.image = pygame.Surface([width, height])
+        self.mini = pygame.Surface([width, height])
+        self.image = pygame.transform.scale(self.mini, (2 * self.width, 2 * self.height)) 
         self.image.fill(colour)
         self.rect = self.image.get_rect()
         self.rect.x = window_width - self.width - 10
         self.rect.y = 10
-        for x in range(self.width):       
-            col = []
-            for y in range(self.height):
-                col.append('#')
-            self.revealed.append(col)        
+        
         
     def reveal(self, dungeon, tile_size, offset_x, offset_y, window_width, window_height,player_x, player_y):
         colour = None
@@ -133,9 +129,11 @@ class MiniMap(pygame.sprite.Sprite):
                     colour = COLOUR_DARK_WALL
                 elif v == "c":
                     colour = COLOUR_DARK_WALL
-                gfxdraw.pixel(self.image, j, i, colour)
+                gfxdraw.pixel(self.mini, j, i, colour)
         
-        gfxdraw.pixel(self.image, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
+        gfxdraw.pixel(self.mini, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
+        self.image = pygame.transform.scale(self.mini, (2 * self.width, 2 * self.height)) 
+        
                              
                     
 def render_pygame_map(dungeon, wall_img, floor_img, tile_size, offset_x, offset_y, window_width, window_height):        
@@ -169,7 +167,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     background_sprite_group = pygame.sprite.Group()
     foreground_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
-    dungeon = DungeonGenerator(numcols*10,numrows*10)
+    dungeon = DungeonGenerator(numcols*5,numrows*5)
     dungeon.generate_map()
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
     foreground_sprite_group.add(my_player)

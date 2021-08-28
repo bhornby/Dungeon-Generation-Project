@@ -6,8 +6,6 @@ BLACK = (0,0,0)
 
 RED = (255, 0, 0)
 LIGHT_RED = (255, 127, 127)
-COLOUR_DARK_WALL = (0, 0, 100)
-COLOUR_DARK_GROUND = (50, 50, 150)
 
 clock = pygame.time.Clock()
 

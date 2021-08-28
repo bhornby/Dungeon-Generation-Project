@@ -2,12 +2,15 @@ import random
 import pygame
 import sys
 from bsp_alg import DungeonGenerator
+from pygame import gfxdraw
+
 
 YELLOW = (255,255,0)
 BLACK = (0,0,0)
 offset_x = 80
 offset_y = 40
-
+COLOUR_DARK_WALL = (0, 0, 100)
+COLOUR_DARK_FLOOR = (50, 50, 150)
 
 
 class Wall(pygame.sprite.Sprite):
@@ -99,7 +102,7 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = y
 
 class MiniMap(pygame.sprite.Sprite):
-    def __init__(self, width,height,colour,window_width, window_height):
+    def __init__(self, width,height,colour, dungeon, tile_size, offset_x, offset_y, window_width, window_height):
         super().__init__()
         self.width = width
         self.height = height
@@ -119,22 +122,24 @@ class MiniMap(pygame.sprite.Sprite):
             self.revealed.append(col)        
         
     def reveal(self, dungeon, tile_size, offset_x, offset_y, window_width, window_height):
-        
+        colour = None
         a = ((offset_y // tile_size))
         b = (((offset_y + window_height) // tile_size)) + 1
         c = ((offset_x // tile_size))
         d = (((offset_x + window_width) // tile_size)) + 1
         for i in range(a, b):
             for j in range(c, d):
-                x = (j * tile_size - offset_x) 
-                y = (i * tile_size - offset_y)
                 v = dungeon.tiles[j][i].tile
-#                 if v == "#":
-#                     
-#                 elif v == ".":
-#                     
-#                 elif v == "c":
-    
+                if v == "#":
+                    colour = COLOUR_DARK_FLOOR
+                elif v == ".":
+                    colour = COLOUR_DARK_WALL
+                elif v == "c":
+                    colour = COLOUR_DARK_WALL
+                gfxdraw.pixel(self.image, j, i, colour)
+        
+                
+                
                     
                     
 def render_pygame_map(dungeon, wall_img, floor_img, tile_size, offset_x, offset_y, window_width, window_height):        
@@ -167,16 +172,14 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     window_height = numrows * tile_size
     background_sprite_group = pygame.sprite.Group()
     foreground_sprite_group = pygame.sprite.Group()
-
     wall_group = pygame.sprite.Group()
     dungeon = DungeonGenerator(numcols*10,numrows*10)
     dungeon.generate_map()
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
     foreground_sprite_group.add(my_player)
-    
-    dungeon_mini = MiniMap(100,200,BLACK, window_width,window_height)
+    dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, offset_x, offset_y, window_width, window_height)
     foreground_sprite_group.add(dungeon_mini)
-    
+   
     
     
     #exit game flag set to false
@@ -207,7 +210,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
                     my_player.player_set_speed(0,0)
         
         (walls, floors) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, tile_size, offset_x, offset_y, window_width, window_height)
-        
+        dungeon_mini.reveal(dungeon, tile_size, offset_x, offset_y, window_width, window_height)
         # TODO remove old walls and floors, then add new ones and reset old ones
         
         background_sprite_group.remove(old_walls)

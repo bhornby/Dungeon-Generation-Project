@@ -9,7 +9,7 @@ offset_x = 80
 offset_y = 40
 
 
-    
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
         super().__init__()
@@ -54,13 +54,13 @@ class Player(pygame.sprite.Sprite):
         self.old_y = self.rect.y
         self.window_width = window_width
         self.window_height = window_height
-        self.tile_size = tile_size
+        self.tile_size = tile_size * 6
            
     def shift(self):
         global offset_x
         global offset_y
         
-        step_size = 5
+        step_size = 2
         if self.rect.x > self.window_width - self.tile_size:
             offset_x += step_size
             self.rect.x -= step_size
@@ -98,13 +98,57 @@ class Player(pygame.sprite.Sprite):
         self.speed_x = x
         self.speed_y = y
 
+class MiniMap(pygame.sprite.Sprite):
+    def __init__(self, width,height,colour,window_width, window_height):
+        super().__init__()
+        self.width = width
+        self.height = height
+        self.revealed = []
+        self.image = pygame.Surface([width, height])
+        self.image.fill(colour)
+        self.rect = self.image.get_rect()
+        self.rect.x = window_width - self.width - 10
+        self.rect.y = 10
+        
+        
+        
+        for x in range(self.width):       
+            col = []
+            for y in range(self.height):
+                col.append('#')
+            self.revealed.append(col)        
+        
+    def reveal(self, dungeon, tile_size, offset_x, offset_y, window_width, window_height):
+        
+        a = ((offset_y // tile_size))
+        b = (((offset_y + window_height) // tile_size)) + 1
+        c = ((offset_x // tile_size))
+        d = (((offset_x + window_width) // tile_size)) + 1
+        for i in range(a, b):
+            for j in range(c, d):
+                x = (j * tile_size - offset_x) 
+                y = (i * tile_size - offset_y)
+                v = dungeon.tiles[j][i].tile
+#                 if v == "#":
+#                     
+#                 elif v == ".":
+#                     
+#                 elif v == "c":
+    
+                    
+                    
 def render_pygame_map(dungeon, wall_img, floor_img, tile_size, offset_x, offset_y, window_width, window_height):        
     walls = []
     floors = []
-    for i in range(offset_y // tile_size, (offset_y + window_height) // tile_size):
-        for j in range(offset_x // tile_size, (offset_x + window_width) // tile_size):
-            x = j * tile_size - offset_x
-            y = i * tile_size - offset_y
+    
+    a = ((offset_y // tile_size))
+    b = (((offset_y + window_height) // tile_size)) + 1
+    c = ((offset_x // tile_size))
+    d = (((offset_x + window_width) // tile_size)) + 1
+    for i in range(a, b):
+        for j in range(c, d):
+            x = (j * tile_size - offset_x) 
+            y = (i * tile_size - offset_y)
             v = dungeon.tiles[j][i].tile
             if v == "#":
                 walls.append(Wall(wall_img, x, y))
@@ -129,6 +173,10 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon.generate_map()
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
     foreground_sprite_group.add(my_player)
+    
+    dungeon_mini = MiniMap(100,200,BLACK, window_width,window_height)
+    foreground_sprite_group.add(dungeon_mini)
+    
     
     
     #exit game flag set to false

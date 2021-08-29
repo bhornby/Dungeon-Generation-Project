@@ -57,26 +57,26 @@ class Player(pygame.sprite.Sprite):
         self.old_y = self.rect.y
         self.window_width = window_width
         self.window_height = window_height
-        self.tile_size = tile_size * 6
+        self.detection_zone = tile_size * 5
            
     def shift(self):
         global offset_x
         global offset_y
         
         step_size = 2
-        if self.rect.x > self.window_width - self.tile_size:
+        if self.rect.x > self.window_width - self.detection_zone:
             offset_x += step_size
             self.rect.x -= step_size
                     
-        elif self.rect.x < self.tile_size:
+        elif self.rect.x < self.detection_zone:
             offset_x -= step_size
             self.rect.x += step_size
         
-        elif self.rect.y > self.window_height - self.tile_size:
+        elif self.rect.y > self.window_height - self.detection_zone:
             offset_y +=  step_size
             self.rect.y -= step_size
             
-        elif self.rect.y < self.tile_size:
+        elif self.rect.y < self.detection_zone:
             offset_y -= step_size
             self.rect.y += step_size
 
@@ -107,10 +107,11 @@ class MiniMap(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.mini = pygame.Surface([width, height])
-        self.image = pygame.transform.scale(self.mini, (2 * self.width, 2 * self.height)) 
+        self.scale=2
+        self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
         self.image.fill(colour)
         self.rect = self.image.get_rect()
-        self.rect.x = window_width - self.width - 10
+        self.rect.x = window_width - self.width * self.scale - 10
         self.rect.y = 10
         
         
@@ -132,7 +133,7 @@ class MiniMap(pygame.sprite.Sprite):
                 gfxdraw.pixel(self.mini, j, i, colour)
         
         gfxdraw.pixel(self.mini, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
-        self.image = pygame.transform.scale(self.mini, (2 * self.width, 2 * self.height)) 
+        self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
         
                              
                     
@@ -141,9 +142,16 @@ def render_pygame_map(dungeon, wall_img, floor_img, tile_size, offset_x, offset_
     floors = []
     
     a = ((offset_y // tile_size))
-    b = (((offset_y + window_height) // tile_size)) + 1
+    b = (((offset_y + window_height) // tile_size)) + 1 
     c = ((offset_x // tile_size))
     d = (((offset_x + window_width) // tile_size)) + 1
+    
+    if b >= dungeon.height:
+        b = dungeon.height - 1
+        
+    if d >= dungeon.width:
+        d = dungeon.width - 1
+    
     for i in range(a, b):
         for j in range(c, d):
             x = (j * tile_size - offset_x) 
@@ -167,7 +175,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     background_sprite_group = pygame.sprite.Group()
     foreground_sprite_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
-    dungeon = DungeonGenerator(numcols*5,numrows*5)
+    dungeon = DungeonGenerator(numcols*5, numrows*5)
     dungeon.generate_map()
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
     foreground_sprite_group.add(my_player)

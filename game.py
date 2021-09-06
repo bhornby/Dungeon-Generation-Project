@@ -57,7 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.old_y = self.rect.y
         self.window_width = window_width
         self.window_height = window_height
-        self.detection_zone = tile_size * 5
+        self.detection_zone = tile_size * 4
            
     def shift(self):
         global offset_x
@@ -197,13 +197,13 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
              
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:#if left key is pressed
-                    my_player.player_set_speed(-1,0)    
+                    my_player.player_set_speed(-2,0)    
                 elif event.key == pygame.K_RIGHT:
-                    my_player.player_set_speed(1,0)       
+                    my_player.player_set_speed(2,0)       
                 elif event.key == pygame.K_UP:
-                    my_player.player_set_speed(0,-1)        
+                    my_player.player_set_speed(0,-2)        
                 elif event.key == pygame.K_DOWN:
-                    my_player.player_set_speed(0,1)       
+                    my_player.player_set_speed(0,2)       
                 elif event.key == pygame.K_ESCAPE:
                     done = True
                     

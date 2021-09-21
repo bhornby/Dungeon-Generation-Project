@@ -28,6 +28,18 @@ class Floor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        
+class Portal(pygame.sprite.Sprite):
+    def __init__(self,image,x,y,portal_group):
+        super().__init__()
+        self.portal_group = portal_group
+        self.x = x
+        self.y = y
+        self.image = pygame.Surface([tile_size,tile_size])
+        self.image.fill(colour)
+        
+#         locate player start position and draw the start portal here. then iterate through the array and find the furthest sub dungeon room and draw the end portal
+#         in collisions when the player collides with the portal send run 
 
 
 class Player(pygame.sprite.Sprite): 

@@ -164,10 +164,6 @@ class DungeonGenerator:
                         return
                     #end if
                     
-                
-
-
-
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)
         # - 1 from the height and the width to allow for full boarder walls

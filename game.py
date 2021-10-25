@@ -69,6 +69,10 @@ class Player(pygame.sprite.Sprite):
                 if v == "#":
                     continue
                 elif v == ".":
+#                     continue
+#                 elif v == "c":
+#                     continue
+#                 elif v == "p":
                     self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
                     self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
            
@@ -153,6 +157,8 @@ class MiniMap(pygame.sprite.Sprite):
                     colour = COLOUR_DARK_WALL
                 elif v == "c":
                     colour = COLOUR_DARK_WALL
+                elif v == "p":
+                    colour = BLUE
                 gfxdraw.pixel(self.mini, j, i, colour)
         
         gfxdraw.pixel(self.mini, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)

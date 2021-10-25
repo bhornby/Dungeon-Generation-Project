@@ -59,6 +59,8 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.image = pygame.Surface([tile_size//2,tile_size//2])
         self.image.fill(colour)
+        self.old_x = None
+        self.old_y = None
         
         #set position of player need to make it so the player starts in a spot with no wall
         self.rect = self.image.get_rect()
@@ -69,6 +71,8 @@ class Player(pygame.sprite.Sprite):
                 if v == "p":
                     self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
                     self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
+                    self.old_x = self.rect.x
+                    self.old_y = self.rect.y
                 elif v == "#":
                     continue
                 elif v == ".":
@@ -120,11 +124,7 @@ class Player(pygame.sprite.Sprite):
         self.old_x = self.rect.x
         self.old_y = self.rect.y
     
-    def reset(self):
-        self.old_x = None
-        self.old_y = None
-        
-            
+                    
     def player_set_speed(self,x,y):
         self.speed_x = x
         self.speed_y = y
@@ -213,7 +213,6 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon.generate_map()
     
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
-    my_player.reset()
     foreground_sprite_group.add(my_player)
     
     dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, offset_x, offset_y, window_width, window_height)

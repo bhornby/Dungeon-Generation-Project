@@ -66,15 +66,16 @@ class Player(pygame.sprite.Sprite):
         for i in range(offset_y // tile_size, window_height // tile_size):
             for j in range(offset_x // tile_size, window_width // tile_size):
                 v = dungeon.tiles[j][i].tile
-                if v == "#":
-                    continue
-                elif v == ".":
-#                     continue
-#                 elif v == "c":
-#                     continue
-#                 elif v == "p":
+                if v == "p":
                     self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
                     self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
+                elif v == "#":
+                    continue
+                elif v == ".":
+                    continue
+                elif v == "c":
+                    continue
+                
            
         self.old_x = self.rect.x
         self.old_y = self.rect.y

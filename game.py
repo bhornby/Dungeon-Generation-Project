@@ -122,7 +122,11 @@ class Player(pygame.sprite.Sprite):
         
         self.shift()
         self.old_x = self.rect.x
-        self.old_y = self.rect.y 
+        self.old_y = self.rect.y
+    
+    def reset(self):
+        self.old_x = None
+        self.old_y = None
         
             
     def player_set_speed(self,x,y):
@@ -211,6 +215,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon.generate_map()
     
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
+    my_player.reset()
     foreground_sprite_group.add(my_player)
     
 #     end_portal = End_Portal(BLUE,tile_size,dungeon,offset_x,offset_y,window_width, window_height)

@@ -30,32 +30,23 @@ class Floor(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         
-# class Start_Portal(pygame.sprite.Sprite):
-#     def __init__(self,colour,my_player,tile_size):
-#         super().__init__()
-#         self.image = pygame.Surface([tile_size,tile_size])
-#         self.image.fill(colour)
-#         self.rect = self.image.get_rect()
-#         
-#         self.rect.x  = my_player.rect.x
-#         self.rect.y  = my_player.rect.y
-#     
-#         
-# class End_Portal(pygame.sprite.Sprite):
-#     def __init__(self,colour,tile_size,dungeon,offset_x,offset_y,window_width, window_height):
-#         super().__init__()
-#         self.image = pygame.Surface([tile_size,tile_size])
-#         self.image.fill(colour)
-#         self.rect = self.image.get_rect()
-#     
-#         for i in range(window_height // tile_size, offset_y // tile_size, -tile_size):
-#             for j in range(window_width // tile_size,offset_x // tile_size, -tile_size):
-#                 v = dungeon.tiles[j][i].tile
-#                 if v == "#":
-#                     continue
-#                 elif v == ".":
-#                     self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
-#                     self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
+class Start_Portal(pygame.sprite.Sprite):
+    def __init__(self,colour,my_player,tile_size):
+        super().__init__()
+        self.image = pygame.Surface([tile_size,tile_size])
+        self.image.fill(colour)
+        self.rect = self.image.get_rect()
+        
+        self.rect.x  = my_player.rect.x
+        self.rect.y  = my_player.rect.y
+    
+        
+class End_Portal(pygame.sprite.Sprite):
+    def __init__(self,colour,tile_size,dungeon,offset_x,offset_y,window_width, window_height):
+        super().__init__()
+        self.image = pygame.Surface([tile_size,tile_size])
+        self.image.fill(colour)
+        self.rect = self.image.get_rect()
 
 
 class Player(pygame.sprite.Sprite): 
@@ -217,13 +208,6 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
     my_player.reset()
     foreground_sprite_group.add(my_player)
-    
-#     end_portal = End_Portal(BLUE,tile_size,dungeon,offset_x,offset_y,window_width, window_height)
-#     start_portal = Start_Portal(BLUE,my_player,tile_size)
-    
-#     portal_group = pygame.sprite.Group()
-#     portal_group.add(end_portal)
-#     portal_group.add(start_portal)
     
     dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, offset_x, offset_y, window_width, window_height)
     foreground_sprite_group.add(dungeon_mini)

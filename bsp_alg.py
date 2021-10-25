@@ -159,13 +159,21 @@ class DungeonGenerator:
         # - 1 from the height and the width to allow for full boarder walls
         self.carve_rooms()
         self.carve_corridors()
-
+     
     def print_map(self):
         for y in range(self.height):
             row = ''
             for x in range(self.width):
-                row += self.tiles[x][y].get_colheight() #either adding in a # = wall or a | = floor space
+                row += self.tiles[x][y].get_colheight()#either adding in a # = wall or a | = floor space   
             print(row)
+                    
+                
+#         for y in range(self.height):
+#             row = ''
+#             for x in range(self.width):
+#                 row += self.tiles[x][y].get_colheight() #either adding in a # = wall or a | = floor space
+#             print(row)
+            
 
 
 

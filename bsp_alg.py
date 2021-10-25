@@ -154,11 +154,26 @@ class DungeonGenerator:
                     for x in range(obj.x, obj.x + obj.width):
                         self.tiles[x][y] = DungeonSqr('c')
 
+    def carve_portal(self):
+        flag = True
+        while flag == True:
+            for y in range(self.height):
+                for x in range(self.width):
+                    if self.tiles[x][y].tile == '.':
+                        self.tiles[x][y].tile = 'p'
+                        return
+                    #end if
+                    
+                
+
+
+
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)
         # - 1 from the height and the width to allow for full boarder walls
         self.carve_rooms()
         self.carve_corridors()
+        self.carve_portal()
      
     def print_map(self):
         for y in range(self.height):
@@ -166,6 +181,7 @@ class DungeonGenerator:
             for x in range(self.width):
                 row += self.tiles[x][y].get_colheight()#either adding in a # = wall or a | = floor space   
             print(row)
+        
                     
                 
 #         for y in range(self.height):

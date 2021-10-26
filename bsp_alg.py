@@ -155,14 +155,12 @@ class DungeonGenerator:
                         self.tiles[x][y] = DungeonSqr('c')
 
     def carve_portal(self):
-        flag = True
-        while flag == True:
-            for y in range(self.height):
-                for x in range(self.width):
-                    if self.tiles[x][y].tile == '.':
-                        self.tiles[x][y].tile = 'p'
-                        return
-                    #end if
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.tiles[x][y].tile == '.':
+                    self.tiles[x][y].tile = 'p'
+                    return
+                #end if
                     
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)

@@ -8,8 +8,6 @@ from pygame import gfxdraw
 YELLOW = (255,255,0)
 BLUE = (173, 216, 230)
 BLACK = (0,0,0)
-offset_x = 80
-offset_y = 40
 COLOUR_DARK_WALL = (0, 0, 100)
 COLOUR_DARK_FLOOR = (50, 50, 150)
 
@@ -54,12 +52,14 @@ class Player(pygame.sprite.Sprite):
         self.window_width = window_width
         self.window_height = window_height
         self.detection_zone = tile_size * 4
+        self.offset_x = offset_x
+        self.offset_y = offset_y
         
-    def locate(self,portal_img,dungeon, tile_size, offset_x, offset_y, window_width, window_height):        
-        a = ((offset_y // tile_size))
-        b = (((offset_y + window_height) // tile_size)) + 1 
-        c = ((offset_x // tile_size))
-        d = (((offset_x + window_width) // tile_size)) + 1
+    def locate(self, dungeon, tile_size, window_width, window_height):        
+        a = ((self.offset_y // tile_size))
+        b = (((self.offset_y + window_height) // tile_size)) + 1 
+        c = ((self.offset_x // tile_size))
+        d = (((self.offset_x + window_width) // tile_size)) + 1
         
         if b >= dungeon.height:
             b = dungeon.height - 1
@@ -69,17 +69,16 @@ class Player(pygame.sprite.Sprite):
         
         for i in range(a, b):
             for j in range(c, d):
-                x = (j * tile_size - offset_x) 
-                y = (i * tile_size - offset_y)
+                x = (j * tile_size - self.offset_x) 
+                y = (i * tile_size - self.offset_y)
                 v = dungeon.tiles[j][i].tile
                 if v == "#":
                     continue
                 elif v == "." or v == "c":
                     continue
                 elif v == "p":
-                    start_portal = Portal(portal_img, x, y)
-                    self.rect.x = start_portal.rect.x
-                    self.rect.y = start_portal.rect.y
+                    self.rect.x = x
+                    self.rect.y = y
                     #end if
             #next colum
         #next row
@@ -105,24 +104,21 @@ class Player(pygame.sprite.Sprite):
         
         
     def shift(self):
-        global offset_x
-        global offset_y
-        
         step_size = 2
         if self.rect.x > self.window_width - self.detection_zone:
-            offset_x += step_size
+            self.offset_x += step_size
             self.rect.x -= step_size
                     
         elif self.rect.x < self.detection_zone:
-            offset_x -= step_size
+            self.offset_x -= step_size
             self.rect.x += step_size
         
         elif self.rect.y > self.window_height - self.detection_zone:
-            offset_y +=  step_size
+            self.offset_y +=  step_size
             self.rect.y -= step_size
             
         elif self.rect.y < self.detection_zone:
-            offset_y -= step_size
+            self.offset_y -= step_size
             self.rect.y += step_size
 
         
@@ -235,11 +231,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon = DungeonGenerator(numcols*5, numrows*5)
     dungeon.generate_map()
     
-    my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
-    my_player.locate(PORTAL_IMAGE, dungeon, tile_size, offset_x, offset_y, window_width, window_height)
+    my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,tile_size * 2, tile_size, window_width, window_height)
+    my_player.locate(dungeon, tile_size, window_width, window_height)
     foreground_sprite_group.add(my_player)
     
-    dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, offset_x, offset_y, window_width, window_height)
+    dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
     foreground_sprite_group.add(dungeon_mini)
    
     
@@ -272,8 +268,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,0)
         
-        (walls, floors, portal) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, tile_size, offset_x, offset_y, window_width, window_height)
-        dungeon_mini.reveal(dungeon, tile_size, offset_x, offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
+        (walls, floors, portal) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
+        dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
         # TODO remove old walls and floors, then add new ones and reset old ones
         
         background_sprite_group.remove(old_walls)

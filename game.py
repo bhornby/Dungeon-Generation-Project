@@ -51,87 +51,63 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()              
         self.window_width = window_width
         self.window_height = window_height
-        self.detection_zone = tile_size * 4
+        self.detection_zone = tile_size * 5
         self.offset_x = offset_x
         self.offset_y = offset_y
+        self.old_x = 0
+        self.old_y = 0
+        self.step_size= 10
         
-    def locate(self, dungeon, tile_size, window_width, window_height):        
-        a = ((self.offset_y // tile_size))
-        b = (((self.offset_y + window_height) // tile_size)) + 1 
-        c = ((self.offset_x // tile_size))
-        d = (((self.offset_x + window_width) // tile_size)) + 1
-        
-        if b >= dungeon.height:
-            b = dungeon.height - 1
+    def locate(self, dungeon, tile_size):        
+        a = 0
+        b = dungeon.height - 1
+        c = 0
+        d = dungeon.width - 1
             
-        if d >= dungeon.width:
-            d = dungeon.width - 1
-        
-        for i in range(a, b):
-            for j in range(c, d):
-                x = (j * tile_size - self.offset_x) 
-                y = (i * tile_size - self.offset_y)
-                v = dungeon.tiles[j][i].tile
-                if v == "#":
-                    continue
-                elif v == "." or v == "c":
-                    continue
-                elif v == "p":
-                    self.rect.x = x
-                    self.rect.y = y
+        for my in range(a, b):
+            for mx in range(c, d):
+                v = dungeon.tiles[mx][my].tile
+                if v == "p":
+                    self.rect.x = (mx * tile_size) 
+                    self.rect.y = (my * tile_size)  
+                    self.old_x = self.rect.x
+                    self.old_y = self.rect.y
+                    return
                     #end if
             #next colum
-        #next row
-        
-        
-        self.old_x = self.rect.x
-        self.old_y = self.rect.y
-                
-#         #set position of player need to make it so the player starts in a spot with no wall
-#         for i in range(offset_y // tile_size, window_height // tile_size):
-#             for j in range(offset_x // tile_size, window_width // tile_size):
-#                 v = dungeon.tiles[j][i].tile
-#                 if v == "#":
-#                     continue
-#                 elif v == ".":
-#                     continue
-#                 elif v == "c":
-#                     continue
-#                 elif v == "p":
-#                     self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
-#                     self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
-                
+        #next row            
         
         
     def shift(self):
-        step_size = 2
         if self.rect.x > self.window_width - self.detection_zone:
-            self.offset_x += step_size
-            self.rect.x -= step_size
+            self.offset_x += self.step_size
+            self.rect.x -= self.step_size
                     
         elif self.rect.x < self.detection_zone:
-            self.offset_x -= step_size
-            self.rect.x += step_size
+            self.offset_x -= self.step_size
+            self.rect.x += self.step_size
         
         elif self.rect.y > self.window_height - self.detection_zone:
-            self.offset_y +=  step_size
-            self.rect.y -= step_size
+            self.offset_y +=  self.step_size
+            self.rect.y -= self.step_size
             
         elif self.rect.y < self.detection_zone:
-            self.offset_y -= step_size
-            self.rect.y += step_size
+            self.offset_y -= self.step_size
+            self.rect.y += self.step_size
+        else:
+            self.step_size = 2
 
         
     def update(self):     
         self.rect.x = self.rect.x + self.speed_x
         self.rect.y = self.rect.y + self.speed_y
         
-        wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
-        for x in wall_hit_list:
-            self.rect.x =  self.old_x 
-            self.rect.y =  self.old_y 
-            self.speed_x = 0
-            self.speed_y = 0
+#         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
+#         for x in wall_hit_list:
+#             self.rect.x =  self.old_x 
+#             self.rect.y =  self.old_y 
+#             self.speed_x = 0
+#             self.speed_y = 0
         
         self.shift()
         self.old_x = self.rect.x
@@ -231,8 +207,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon = DungeonGenerator(numcols*5, numrows*5)
     dungeon.generate_map()
     
-    my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,tile_size * 2, tile_size, window_width, window_height)
-    my_player.locate(dungeon, tile_size, window_width, window_height)
+    my_player = Player(YELLOW,tile_size,speed, dungeon, wall_group, 0, 0, window_width, window_height)
+    my_player.locate(dungeon, tile_size)
     foreground_sprite_group.add(my_player)
     
     dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
@@ -292,8 +268,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
         
         
         #update all sprites
-        background_sprite_group.update()
         foreground_sprite_group.update()
+        background_sprite_group.update()
         #screen background is black
         screen.fill(BLACK)
         #draw function

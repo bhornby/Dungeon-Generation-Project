@@ -49,34 +49,61 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.image = pygame.Surface([tile_size//2,tile_size//2])
         self.image.fill(colour)
-        self.old_x = None
-        self.old_y = None
         
-        #set position of player need to make it so the player starts in a spot with no wall
-        self.rect = self.image.get_rect()
-    
-        for i in range(offset_y // tile_size, window_height // tile_size):
-            for j in range(offset_x // tile_size, window_width // tile_size):
-                v = dungeon.tiles[j][i].tile
-                if v == "p":
-                    self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
-                    self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
-                    self.old_x = self.rect.x
-                    self.old_y = self.rect.y
-                elif v == "#":
-                    continue
-                elif v == ".":
-                    continue
-                elif v == "c":
-                    continue
-                
-           
-        self.old_x = self.rect.x
-        self.old_y = self.rect.y
+        self.rect = self.image.get_rect()              
         self.window_width = window_width
         self.window_height = window_height
         self.detection_zone = tile_size * 4
-           
+        
+    def locate(self,portal_img,dungeon, tile_size, offset_x, offset_y, window_width, window_height):        
+        a = ((offset_y // tile_size))
+        b = (((offset_y + window_height) // tile_size)) + 1 
+        c = ((offset_x // tile_size))
+        d = (((offset_x + window_width) // tile_size)) + 1
+        
+        if b >= dungeon.height:
+            b = dungeon.height - 1
+            
+        if d >= dungeon.width:
+            d = dungeon.width - 1
+        
+        for i in range(a, b):
+            for j in range(c, d):
+                x = (j * tile_size - offset_x) 
+                y = (i * tile_size - offset_y)
+                v = dungeon.tiles[j][i].tile
+                if v == "#":
+                    continue
+                elif v == "." or v == "c":
+                    continue
+                elif v == "p":
+                    start_portal = Portal(portal_img, x, y)
+                    self.rect.x = start_portal.rect.x
+                    self.rect.y = start_portal.rect.y
+                    #end if
+            #next colum
+        #next row
+        
+        
+        self.old_x = self.rect.x
+        self.old_y = self.rect.y
+                
+#         #set position of player need to make it so the player starts in a spot with no wall
+#         for i in range(offset_y // tile_size, window_height // tile_size):
+#             for j in range(offset_x // tile_size, window_width // tile_size):
+#                 v = dungeon.tiles[j][i].tile
+#                 if v == "#":
+#                     continue
+#                 elif v == ".":
+#                     continue
+#                 elif v == "c":
+#                     continue
+#                 elif v == "p":
+#                     self.rect.x  = (j) * tile_size + offset_x % tile_size - offset_x 
+#                     self.rect.y  = (i) * tile_size + offset_y % tile_size - offset_y
+                
+        
+        
     def shift(self):
         global offset_x
         global offset_y
@@ -113,7 +140,7 @@ class Player(pygame.sprite.Sprite):
         self.shift()
         self.old_x = self.rect.x
         self.old_y = self.rect.y
-    
+
                     
     def player_set_speed(self,x,y):
         self.speed_x = x
@@ -183,7 +210,8 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, tile_size, offse
             elif v == "." or v == "c":
                 floors.append(Floor(floor_img, x, y))
             elif v == "p":
-                portal.append(Portal(portal_img, x, y))
+                start_portal = Portal(portal_img, x, y)
+                portal.append(start_portal)
                 #end if
         #next colum
     #next row
@@ -208,6 +236,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     dungeon.generate_map()
     
     my_player = Player(YELLOW,tile_size,speed, dungeon,wall_group,offset_x, offset_y, window_width, window_height)
+    my_player.locate(PORTAL_IMAGE, dungeon, tile_size, offset_x, offset_y, window_width, window_height)
     foreground_sprite_group.add(my_player)
     
     dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, offset_x, offset_y, window_width, window_height)

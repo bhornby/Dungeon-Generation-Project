@@ -4,7 +4,7 @@ import sys
 from bsp_alg import DungeonGenerator
 from pygame import gfxdraw
 
-
+YELLOW_ISH = (238,238,204)
 YELLOW = (255,255,0)
 RED = (255,0,0)
 BLUE = (173, 216, 230)
@@ -37,7 +37,7 @@ class Portal(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-class Evidence(pygame.sprite.Sprite):
+class Key(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
         super().__init__()
         self.image = image
@@ -147,6 +147,13 @@ class MiniMap(pygame.sprite.Sprite):
         b = (((offset_y + window_height) // tile_size)) + 1
         c = ((offset_x // tile_size))
         d = (((offset_x + window_width) // tile_size)) + 1
+        
+        if b >= dungeon.height:
+            b = dungeon.height - 1
+        
+        if d >= dungeon.width:
+            d = dungeon.width - 1
+            
         for i in range(a, b):
             for j in range(c, d):
                 v = dungeon.tiles[j][i].tile
@@ -160,6 +167,8 @@ class MiniMap(pygame.sprite.Sprite):
                     colour = BLUE
                 elif v == "ep":
                     colour = RED
+                elif v == "k":
+                    colour = YELLOW_ISH 
                 gfxdraw.pixel(self.mini, j, i, colour)
         
         gfxdraw.pixel(self.mini, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
@@ -167,11 +176,12 @@ class MiniMap(pygame.sprite.Sprite):
         
                              
                     
-def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, tile_size, offset_x, offset_y, window_width, window_height):        
+def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size, offset_x, offset_y, window_width, window_height):        
     walls = []
     floors = []
     s_portal = []
     e_portal = []
+    keys = []
     
     a = ((offset_y // tile_size))
     b = (((offset_y + window_height) // tile_size)) + 1 
@@ -199,18 +209,22 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
             elif v == "ep":
                 end_portal = Portal(end_portal_img, x, y)
                 e_portal.append(end_portal)
+            elif v == "k":
+                keys.append(Key(key_img, x, y))
+                
                 #end if
         #next colum
     #next row
-    return (walls, floors, s_portal, e_portal)
+    return (walls, floors, s_portal, e_portal, keys)
                 
-def main_loop(screen, clock, tile_size, numrows, numcols):
+def main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor):
     speed = 5
     
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("brick.png").convert(),(tile_size,tile_size))
     FLOOR_IMAGE = pygame.transform.scale(pygame.image.load("floorcolour.png").convert(),(tile_size,tile_size))
     PORTAL_IMAGE = pygame.transform.scale(pygame.image.load("PORTAL_final.png").convert(),(tile_size,tile_size))
     END_PORTAL_IMAGE = pygame.transform.scale(pygame.image.load("END_PORTAL.png").convert(),(tile_size,tile_size))
+    KEY_IMAGE = pygame.transform.scale(pygame.image.load("REAL_KEY.png").convert(),(tile_size,tile_size))
     
     window_width = numcols * tile_size
     window_height = numrows * tile_size
@@ -220,8 +234,10 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     wall_group = pygame.sprite.Group()
     s_portal_group = pygame.sprite.Group()
     e_portal_group = pygame.sprite.Group()
+    key_group = pygame.sprite.Group()
     
-    dungeon = DungeonGenerator(numcols*5, numrows*5)
+    dungeon = DungeonGenerator(numcols * map_factor, numrows * map_factor, key_count)
+    print(key_count)
     dungeon.generate_map()
     
     my_player = Player(YELLOW,tile_size,speed, dungeon, wall_group, 0, 0, window_width, window_height)
@@ -239,6 +255,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     old_floors = []
     old_s_portal = []
     old_e_portal = []
+    old_keys = []
     while not done:
         #user input
         
@@ -262,7 +279,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,0)
         
-        (walls, floors, s_portal, e_portal) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
+        (walls, floors, s_portal, e_portal, keys) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
         dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
         # TODO remove old walls and floors, then add new ones and reset old ones
         
@@ -270,11 +287,13 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
         background_sprite_group.remove(old_floors)
         background_sprite_group.remove(old_s_portal)
         background_sprite_group.remove(old_e_portal)
+        background_sprite_group.remove(old_keys)
         
         background_sprite_group.add(walls)
         background_sprite_group.add(floors)
         background_sprite_group.add(s_portal)
         background_sprite_group.add(e_portal)
+        background_sprite_group.add(keys)
         
         wall_group.remove(old_walls)
         wall_group.add(walls)
@@ -285,11 +304,14 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
         e_portal_group.remove(old_e_portal)
         e_portal_group.add(e_portal)
         
+        key_group.remove(old_keys)
+        key_group.add(keys)
         
         old_walls = walls
         old_floors = floors
         old_s_portal = s_portal
         old_e_portal = e_portal
+        old_keys = keys
         
         
         

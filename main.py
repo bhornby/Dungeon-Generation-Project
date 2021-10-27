@@ -15,6 +15,9 @@ tile_size = 40
 numrows = 18
 numcols = 25
 
+key_count = 5
+map_factor = 2
+
 
 #black screen
 screen_size = (1000,720)
@@ -131,11 +134,14 @@ def options_menu():
 
 def difficulty_menu():
     
+    global key_count
+    global map_factor
+    
     difficulty = True
     
-    hard_button = Button(screen.get_width()//2 - 100, screen.get_height()//3, 200, 50, RED,'Hard')
-    medium_button = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Medium')
-    easy_button = Button(screen.get_width()//2 - 100, screen.get_height()//2, 200, 50, RED, 'Easy')
+    hard_button = Button(screen.get_width()//2 - 125, screen.get_height()//3, 250, 50, RED,'Hard - 15 key')
+    medium_button = Button(screen.get_width()//2 - 125, screen.get_height()//2.4, 250, 50, RED, 'Medium - 10 key')
+    easy_button = Button(screen.get_width()//2 - 125, screen.get_height()//2, 250, 50, RED, 'Easy - 5 key')
     
     
     def display_difficulty():
@@ -189,13 +195,16 @@ def difficulty_menu():
                     
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if hard_button.isOver(pos):
-                    pass
+                    key_count = 15
+                    map_factor = 5
                     
                 if medium_button.isOver(pos):
-                    pass
-                
+                    key_count = 10
+                    map_factor = 3
+                    
                 if easy_button.isOver(pos):
-                    pass
+                    key_count = 5
+                    map_factor = 2
             
                     
         pygame.display.update()
@@ -263,7 +272,7 @@ def main_menu():
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_1.isOver(pos):
-                    main_loop(screen, clock, tile_size, numrows, numcols)
+                    main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor)
                     display_menu()
                     
                 if button_2.isOver(pos):

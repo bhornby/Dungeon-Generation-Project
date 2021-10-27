@@ -90,6 +90,7 @@ class DungeonGenerator:
         #at the end of the random split you are left with the self.MAX number of leaves in the self.leaves list
           
     def carve_rooms(self):
+        remaining_rooms = len(self.leaves)
         for leaf in self.leaves:
             # We don't want to fill in every possible room or the  dungeon looks too uniform
             #if random() > 0.90: continue
@@ -107,27 +108,28 @@ class DungeonGenerator:
     
             self.rooms.append(Room(room_start_x, room_start_y, room_width, room_height))
             
-            if self.key_count > 0 :
-                p = randint(0,9)
-                if p > 5:
-                    self.key_count = self.key_count - 1
-                    key_x = randint(room_start_x, room_start_x + room_width)
-                    key_y = randint(room_start_y, room_start_y + room_height)
+            if self.key_count >= remaining_rooms:
+                print("spam")
+                p = 9
+            elif self.key_count > 0 :
+                p = randint(0, 10)
+                print(f"try {p}")
+            else:
+                p = 0
+                
+            if p > 8:
+                self.key_count = self.key_count - 1
+                key_x = randint(room_start_x, room_start_x + room_width - 1)
+                key_y = randint(room_start_y, room_start_y + room_height - 1)
+                self.tiles[key_x][key_y] = DungeonSqr('k')
                     
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
-                    if y == key_y and x == key_x:
-                        self.tiles[x][y] = DungeonSqr('k')
-                    else:
-                        self.tiles[x][y] = DungeonSqr('.')
+                    if self.tiles[x][y].tile != 'k':
+                         self.tiles[x][y] = DungeonSqr('.')
                         
-            
-            
-            
-                        
-                            
-                            
-                            
+            remaining_rooms = remaining_rooms - 1
+                          
     def carve_corridors(self):
         for (is_vert_split, (y, x)) in self.splits:
             

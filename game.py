@@ -3,6 +3,7 @@ import pygame
 import sys
 from bsp_alg import DungeonGenerator
 from pygame import gfxdraw
+from bsp_alg import DungeonSqr
 
 YELLOW_ISH = (238,238,204)
 YELLOW = (255,255,0)
@@ -38,12 +39,24 @@ class Portal(pygame.sprite.Sprite):
         self.rect.y = y
 
 class Key(pygame.sprite.Sprite):
-    def __init__(self,image,x,y):
+    def __init__(self,image,x,y,col,row, dungeon, player):
         super().__init__()
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.col = col
+        self.row = row
+        self.player = player
+        self.dungeon = dungeon
+        
+    def update(self):
+        key_hit_list = pygame.sprite.spritecollide(self, [self.player],False )
+        for x in key_hit_list:
+            self.dungeon.tiles[self.col][self.row] = DungeonSqr('.')
+            print("boom")
+            
+        
 
 
 class Player(pygame.sprite.Sprite): 
@@ -56,6 +69,7 @@ class Player(pygame.sprite.Sprite):
         self.speed_y = 0
         self.image = pygame.Surface([tile_size//2,tile_size//2])
         self.image.fill(colour)
+        self.key_inventory = 0
         
         self.rect = self.image.get_rect()              
         self.window_width = window_width
@@ -176,17 +190,17 @@ class MiniMap(pygame.sprite.Sprite):
         
                              
                     
-def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size, offset_x, offset_y, window_width, window_height):        
+def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player):        
     walls = []
     floors = []
     s_portal = []
     e_portal = []
     keys = []
     
-    a = ((offset_y // tile_size))
-    b = (((offset_y + window_height) // tile_size)) + 1 
-    c = ((offset_x // tile_size))
-    d = (((offset_x + window_width) // tile_size)) + 1
+    a = ((my_player.offset_y // tile_size))
+    b = (((my_player.offset_y + window_height) // tile_size)) + 1 
+    c = ((my_player.offset_x // tile_size))
+    d = (((my_player.offset_x + window_width) // tile_size)) + 1
     
     if b >= dungeon.height:
         b = dungeon.height - 1
@@ -196,8 +210,8 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
     
     for i in range(a, b):
         for j in range(c, d):
-            x = (j * tile_size - offset_x) 
-            y = (i * tile_size - offset_y)
+            x = (j * tile_size - my_player.offset_x) 
+            y = (i * tile_size - my_player.offset_y)
             v = dungeon.tiles[j][i].tile
             if v == "#":
                 walls.append(Wall(wall_img, x, y))
@@ -210,7 +224,7 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
                 end_portal = Portal(end_portal_img, x, y)
                 e_portal.append(end_portal)
             elif v == "k":
-                keys.append(Key(key_img, x, y))
+                keys.append(Key(key_img, x, y, j, i, dungeon, my_player))
                 
                 #end if
         #next colum
@@ -279,7 +293,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor)
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,0)
         
-        (walls, floors, s_portal, e_portal, keys) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
+        (walls, floors, s_portal, e_portal, keys) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player)
         dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
         # TODO remove old walls and floors, then add new ones and reset old ones
         

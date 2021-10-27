@@ -161,6 +161,14 @@ class DungeonGenerator:
                     self.tiles[x][y].tile = 'p'
                     return
                 #end if
+                
+    def carve_end_portal(self):
+        for y in range(self.height - 1,0,-1):
+            for x in range(self.width - 1,0,-1):
+                if self.tiles[x][y].tile == '.':
+                    self.tiles[x][y].tile = 'ep'
+                    return
+                #end if
                     
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)
@@ -168,6 +176,7 @@ class DungeonGenerator:
         self.carve_rooms()
         self.carve_corridors()
         self.carve_portal()
+        self.carve_end_portal()
      
     def print_map(self):
         for y in range(self.height):

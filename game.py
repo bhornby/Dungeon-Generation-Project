@@ -36,7 +36,15 @@ class Portal(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-    
+
+class Evidence(pygame.sprite.Sprite):
+    def __init__(self,image,x,y):
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
 
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,tile_size,speed,dungeon,wall_group,offset_x, offset_y, window_width, window_height):

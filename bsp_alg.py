@@ -2,6 +2,7 @@
 from random import random
 from random import randrange
 from random import choice
+from random import randint
 
 class DungeonSqr:
     def __init__(self, tile):
@@ -25,7 +26,7 @@ class Corridor:
         self.height = height
 
 class DungeonGenerator:
-    def __init__(self, width, height):
+    def __init__(self, width, height, key_count):
         self.MAX = 25 # Cutoff for when we want to stop splitting the tree
         self.width = width
         self.height = height
@@ -34,6 +35,7 @@ class DungeonGenerator:
         self.tiles = []
         self.rooms = []
         self.corridors = []
+        self.key_count = key_count
 
         
         for x in range(self.width):       
@@ -106,7 +108,16 @@ class DungeonGenerator:
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
                     self.tiles[x][y] = DungeonSqr('.')
-    
+            
+            while self.key_count > 0:
+                p = randrange(10)
+                for y in range(room_start_y, room_start_y + room_height):
+                    for x in range(room_start_x, room_start_x + room_width):
+                        if p < 2:
+                            self.tiles[x][y] = DungeonSqr('k')
+                            self.key_count  =self.key_count - 1
+                            
+                            
     def carve_corridors(self):
         for (is_vert_split, (y, x)) in self.splits:
             
@@ -168,7 +179,8 @@ class DungeonGenerator:
                 if self.tiles[x][y].tile == '.':
                     self.tiles[x][y].tile = 'ep'
                     return
-                #end if
+                #end i
+        
                     
     def generate_map(self):
         self.random_split(1, 1, self.height - 5, self.width - 5)

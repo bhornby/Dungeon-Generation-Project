@@ -68,7 +68,7 @@ class Player(pygame.sprite.Sprite):
         for my in range(a, b):
             for mx in range(c, d):
                 v = dungeon.tiles[mx][my].tile
-                if v == "ep":
+                if v == "p":
                     self.rect.x = (mx * tile_size) 
                     self.rect.y = (my * tile_size)  
                     self.old_x = self.rect.x
@@ -103,12 +103,12 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = self.rect.x + self.speed_x
         self.rect.y = self.rect.y + self.speed_y
         
-#         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
-#         for x in wall_hit_list:
-#             self.rect.x =  self.old_x 
-#             self.rect.y =  self.old_y 
-#             self.speed_x = 0
-#             self.speed_y = 0
+        wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
+        for x in wall_hit_list:
+            self.rect.x =  self.old_x 
+            self.rect.y =  self.old_y 
+            self.speed_x = 0
+            self.speed_y = 0
         
         self.shift()
         self.old_x = self.rect.x

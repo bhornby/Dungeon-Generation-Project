@@ -117,7 +117,7 @@ class DungeonGenerator:
             else:
                 p = 0
                 
-            if p > 8:
+            if p > 6:
                 self.key_count = self.key_count - 1
                 key_x = randint(room_start_x, room_start_x + room_width - 1)
                 key_y = randint(room_start_y, room_start_y + room_height - 1)

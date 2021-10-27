@@ -6,6 +6,7 @@ from pygame import gfxdraw
 
 
 YELLOW = (255,255,0)
+RED = (255,0,0)
 BLUE = (173, 216, 230)
 BLACK = (0,0,0)
 COLOUR_DARK_WALL = (0, 0, 100)
@@ -67,7 +68,7 @@ class Player(pygame.sprite.Sprite):
         for my in range(a, b):
             for mx in range(c, d):
                 v = dungeon.tiles[mx][my].tile
-                if v == "p":
+                if v == "ep":
                     self.rect.x = (mx * tile_size) 
                     self.rect.y = (my * tile_size)  
                     self.old_x = self.rect.x
@@ -149,6 +150,8 @@ class MiniMap(pygame.sprite.Sprite):
                     colour = COLOUR_DARK_WALL
                 elif v == "p":
                     colour = BLUE
+                elif v == "ep":
+                    colour = RED
                 gfxdraw.pixel(self.mini, j, i, colour)
         
         gfxdraw.pixel(self.mini, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
@@ -156,7 +159,7 @@ class MiniMap(pygame.sprite.Sprite):
         
                              
                     
-def render_pygame_map(dungeon, wall_img, floor_img, portal_img, tile_size, offset_x, offset_y, window_width, window_height):        
+def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, tile_size, offset_x, offset_y, window_width, window_height):        
     walls = []
     floors = []
     portal = []
@@ -184,6 +187,9 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, tile_size, offse
             elif v == "p":
                 start_portal = Portal(portal_img, x, y)
                 portal.append(start_portal)
+            elif v == "ep":
+                end_portal = Portal(end_portal_img, x, y)
+                portal.append(end_portal)
                 #end if
         #next colum
     #next row
@@ -195,6 +201,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("brick.png").convert(),(tile_size,tile_size))
     FLOOR_IMAGE = pygame.transform.scale(pygame.image.load("floorcolour.png").convert(),(tile_size,tile_size))
     PORTAL_IMAGE = pygame.transform.scale(pygame.image.load("PORTAL_final.png").convert(),(tile_size,tile_size))
+    END_PORTAL_IMAGE = pygame.transform.scale(pygame.image.load("END_PORTAL.png").convert(),(tile_size,tile_size))
     
     window_width = numcols * tile_size
     window_height = numrows * tile_size
@@ -244,7 +251,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols):
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,0)
         
-        (walls, floors, portal) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
+        (walls, floors, portal) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
         dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
         # TODO remove old walls and floors, then add new ones and reset old ones
         

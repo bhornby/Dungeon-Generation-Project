@@ -95,6 +95,8 @@ class DungeonGenerator:
             #if random() > 0.90: continue
             section_width = leaf[3] - leaf[1]
             section_height = leaf[2] - leaf[0]
+            key_x = None
+            key_y = None
 
             # The actual room's height and width will be 60-90% of the 
             # available section.
@@ -105,17 +107,25 @@ class DungeonGenerator:
     
             self.rooms.append(Room(room_start_x, room_start_y, room_width, room_height))
             
+            if self.key_count > 0 :
+                p = randint(0,9)
+                if p > 5:
+                    self.key_count = self.key_count - 1
+                    key_x = randint(room_start_x, room_start_x + room_width)
+                    key_y = randint(room_start_y, room_start_y + room_height)
+                    
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
-                    self.tiles[x][y] = DungeonSqr('.')
+                    if y == key_y and x == key_x:
+                        self.tiles[x][y] = DungeonSqr('k')
+                    else:
+                        self.tiles[x][y] = DungeonSqr('.')
+                        
             
-            while self.key_count > 0:
-                p = randrange(10)
-                for y in range(room_start_y, room_start_y + room_height):
-                    for x in range(room_start_x, room_start_x + room_width):
-                        if p < 2:
-                            self.tiles[x][y] = DungeonSqr('k')
-                            self.key_count  =self.key_count - 1
+            
+            
+                        
+                            
                             
                             
     def carve_corridors(self):

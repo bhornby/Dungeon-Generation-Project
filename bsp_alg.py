@@ -91,6 +91,7 @@ class DungeonGenerator:
           
     def carve_rooms(self):
         remaining_rooms = len(self.leaves)
+        count = 0
         for leaf in self.leaves:
             # We don't want to fill in every possible room or the  dungeon looks too uniform
             #if random() > 0.90: continue
@@ -122,14 +123,19 @@ class DungeonGenerator:
                 key_x = randint(room_start_x, room_start_x + room_width - 1)
                 key_y = randint(room_start_y, room_start_y + room_height - 1)
                 self.tiles[key_x][key_y] = DungeonSqr('k')
+                count = count + 1
+                
                     
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
                     if self.tiles[x][y].tile != 'k':
                          self.tiles[x][y] = DungeonSqr('.')
-                        
+                
             remaining_rooms = remaining_rooms - 1
-                          
+   
+        self.key_count = count
+    
+    
     def carve_corridors(self):
         for (is_vert_split, (y, x)) in self.splits:
             

@@ -139,9 +139,9 @@ def difficulty_menu():
     
     difficulty = True
     
-    hard_button = Button(screen.get_width()//2 - 125, screen.get_height()//3, 250, 50, RED,'Hard - 15 key')
-    medium_button = Button(screen.get_width()//2 - 125, screen.get_height()//2.4, 250, 50, RED, 'Medium - 10 key')
-    easy_button = Button(screen.get_width()//2 - 125, screen.get_height()//2, 250, 50, RED, 'Easy - 5 key')
+    hard_button = Button(screen.get_width()//2 - 125, screen.get_height()//3, 250, 50, RED,'Hard')
+    medium_button = Button(screen.get_width()//2 - 125, screen.get_height()//2.4, 250, 50, RED, 'Medium')
+    easy_button = Button(screen.get_width()//2 - 125, screen.get_height()//2, 250, 50, RED, 'Easy')
     
     
     def display_difficulty():
@@ -272,7 +272,11 @@ def main_menu():
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if button_1.isOver(pos):
-                    main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor)
+                    exit_game = False
+                    level = 1
+                    while not exit_game:
+                        exit_game = main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor, level)
+                        level = level + 1
                     display_menu()
                     
                 if button_2.isOver(pos):

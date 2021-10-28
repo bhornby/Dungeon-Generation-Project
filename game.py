@@ -68,51 +68,56 @@ class Key(pygame.sprite.Sprite):
    
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, colour, x, y, tile_size):
+    def __init__(self, colour, x, y, tile_size, wall_group, col, row):
         super().__init__()
         
-#         self.wall_group = wall_group
         self.colour  = colour
-#         self.tile_size =  tile_size
-#         self.speed_x = 0
-#         self.speed_y = 0
         self.image = pygame.Surface((tile_size,tile_size))
         self.image.fill(colour)
-#         self.enemy_count = dungeon.enemy_count
-        
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-#         self.window_width = window_width
-#         self.window_height = window_height
-#         self.old_x = 0
-#         self.old_y = 0
         
-#         def update():
-#             self.rect.x += self.speed_x
-#             self.rect.y += self.speed_y
-#         
+        self.col = col
+        self.row = row
+        
+        self.wall_group = wall_group
+        self.speed_x = 0
+        self.speed_y = 0
+        self.old_x = 0
+        self.old_y = 0
+        
+        def update():
+            i  = randint(0,3)
+            if i == 1:
+                self.direction()
+            
+            self.rect.x += self.speed_x
+            self.rect.y += self.speed_y
+            
+        
 #             wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
 #             for x in wall_hit_list:
 #                 self.rect.x =  self.old_x 
 #                 self.rect.y =  self.old_y 
 #                 self.speed_x = 0
 #                 self.speed_y = 0
-#         
-#         def directin():
-#             for i in randrange(3):
-#                 if i == 0:
-#                     self.speed_x = 2
-#                 elif i == 1:
-#                     self.speed_x = -2
-#                 elif i == 3:
-#                     self.speed_y = 2
-#                 elif i == 4:
-#                     self.speed_y = -2
-            
-            
-            
-
+        
+        def direction():
+            i = randint(0,3)
+            if i == 0:
+                self.speed_x = 2
+                self.speed_y = 0
+            elif i == 1:
+                self.speed_x = -2
+                self.speed_y = 0 
+            elif i == 2:
+                self.speed_y = 2
+                self.speed_x = 0 
+            elif i == 3:
+                self.speed_y = -2
+                self.speed_x = 0
+        
 
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,tile_size,speed,dungeon,wall_group,offset_x, offset_y, window_width, window_height):
@@ -135,6 +140,7 @@ class Player(pygame.sprite.Sprite):
         self.old_x = 0
         self.old_y = 0
         self.step_size= 10
+        
         
     def locate(self, dungeon, tile_size):        
         a = 0
@@ -247,7 +253,7 @@ class MiniMap(pygame.sprite.Sprite):
         
                              
                     
-def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player):        
+def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player, wall_group, monster_group):        
     walls = []
     floors = []
     s_portal = []
@@ -284,9 +290,15 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
             elif v == "k":
                 keys.append(Key(key_img, x, y, j, i, dungeon, my_player))
             elif v == "m":
-                monsters.append(Monster(RED, x, y, tile_size))
-                
-                
+                existing = False
+                for m in monster_group:
+                    if m.col == j and m.row == i:
+                        monsters.append(m)
+                        existing=True
+                        break
+                if not existing:
+                    monsters.append(Monster(RED, x, y, tile_size, wall_group, j, i))
+        
                 #end if
         #next colum
     #next row
@@ -374,7 +386,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,0)
         
-        (walls, floors, s_portal, e_portal, keys, monsters) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player)
+        (walls, floors, s_portal, e_portal, keys, monsters) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player, wall_group, monster_group)
         dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
         # TODO remove old walls and floors, then add new ones and reset old ones
         
@@ -383,14 +395,14 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         background_sprite_group.remove(old_s_portal)
         background_sprite_group.remove(old_e_portal)
         background_sprite_group.remove(old_keys)
-        background_sprite_group.remove(old_monsters)
     
-        
         background_sprite_group.add(walls)
         background_sprite_group.add(floors)
         background_sprite_group.add(s_portal)
         background_sprite_group.add(e_portal)
         background_sprite_group.add(keys)
+        
+        background_sprite_group.remove(old_monsters)
         background_sprite_group.add(monsters)
         
         wall_group.remove(old_walls)

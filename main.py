@@ -15,7 +15,7 @@ tile_size = 40
 numrows = 18
 numcols = 25
 
-enemy_count = 2
+enemy_count = 10
 key_count = 5
 map_factor = 2
 

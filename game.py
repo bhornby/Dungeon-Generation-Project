@@ -47,10 +47,7 @@ class Portal(pygame.sprite.Sprite):
             if self.player.key_inventory == self.key_count:
                 self.player.key_inventory = None
  
-                
-                
             
-
 class Key(pygame.sprite.Sprite):
     def __init__(self,image,x,y,col,row, dungeon, player):
         super().__init__()
@@ -68,7 +65,71 @@ class Key(pygame.sprite.Sprite):
         for x in key_hit_list:
             self.dungeon.tiles[self.col][self.row] = DungeonSqr('.')
             self.player.key_inventory = self.player.key_inventory + 1
+   
+
+class Monster(pygame.sprite.Sprite):
+    def __init__(self,colour, tile_size, speed, dungeon, wall_group, offset_x, offset_y, window_width, window_height):
+        super().__init__()
+        
+        self.wall_group = wall_group
+        self.colour  = colour
+        self.tile_size =  tile_size
+        self.speed_x = 0
+        self.speed_y = 0
+        self.image = pygame.Surface(tile_size,tile_size)
+        self.image.fill(colour)
+        
+        self.rect = self.image.get_rect()
+        self.window_width = window_width
+        self.window_height = window_height
+        self.old_x = 0
+        self.old_y = 0
+        
+        def locate(self, dungeon, tile_size):        
+        a = 0
+        b = dungeon.height - 1
+        c = 0
+        d = dungeon.width - 1
             
+        for my in range(a, b):
+            for mx in range(c, d):
+                v = dungeon.tiles[mx][my].tile
+                if v == "m":
+                    self.rect.x = (mx * tile_size) 
+                    self.rect.y = (my * tile_size)  
+                    self.old_x = self.rect.x
+                    self.old_y = self.rect.y
+                    return
+                    #end if
+            #next colum
+        #next row 
+        
+        def update():
+            self.rect.x += self.speed_x
+            self.rect.y += self.speed_y
+        
+            wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
+            for x in wall_hit_list:
+                self.rect.x =  self.old_x 
+                self.rect.y =  self.old_y 
+                self.speed_x = 0
+                self.speed_y = 0
+        
+        def directin():
+            for i in randrange(3):
+                if i == 0:
+                    self.speed_x = 2
+                elif i == 1:
+                    self.speed_x = -2
+                elif i == 3:
+                    self.speed_y = 2
+                elif i == 4:
+                    self.speed_y = -2
+            
+            
+            
+
+
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,tile_size,speed,dungeon,wall_group,offset_x, offset_y, window_width, window_height):
         super().__init__()
@@ -189,7 +250,7 @@ class MiniMap(pygame.sprite.Sprite):
                     colour = COLOUR_DARK_WALL
                 elif v == "p":
                     colour = BLUE
-                elif v == "ep":
+                elif v == "e":
                     colour = RED
                 elif v == "k":
                     colour = YELLOW_ISH 
@@ -230,7 +291,7 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
             elif v == "p":
                 start_portal = Portal(portal_img, x, y, my_player, dungeon.key_count)
                 s_portal.append(start_portal)
-            elif v == "ep":
+            elif v == "e":
                 end_portal = Portal(end_portal_img, x, y, my_player, dungeon.key_count)
                 e_portal.append(end_portal)
             elif v == "k":

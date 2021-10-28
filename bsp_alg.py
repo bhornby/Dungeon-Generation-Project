@@ -136,13 +136,13 @@ class DungeonGenerator:
             self.key_count = self.key_count - keys_placed
             count += keys_placed
             
-            enemies_placed = keys_placed = room.place_obj(self.enemy_count, 'e', remaining_rooms, self)
+            enemies_placed = keys_placed = room.place_obj(self.enemy_count, 'm', remaining_rooms, self)
             self.enemy_count = self.enemy_count - enemies_placed
             e_count += enemies_placed
          
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
-                    if self.tiles[x][y].tile != 'k' and self.tiles[x][y].tile != 'e':
+                    if self.tiles[x][y].tile != 'k' and self.tiles[x][y].tile != 'm':
                          self.tiles[x][y] = DungeonSqr('.')
                 
             remaining_rooms = remaining_rooms - 1
@@ -209,7 +209,7 @@ class DungeonGenerator:
         for y in range(self.height - 1,0,-1):
             for x in range(self.width - 1,0,-1):
                 if self.tiles[x][y].tile == '.':
-                    self.tiles[x][y].tile = 'ep'
+                    self.tiles[x][y].tile = 'e'
                     return
                 #end i
         

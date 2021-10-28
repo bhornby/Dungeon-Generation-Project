@@ -31,12 +31,32 @@ class Floor(pygame.sprite.Sprite):
         self.rect.y = y
         
 class Portal(pygame.sprite.Sprite):
-    def __init__(self,image,x,y):
+    def __init__(self, image, x, y, player, key_count, screen, clock, tile_size, numrows, numcols, map_factor):
         super().__init__()
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.player = player
+        self.key_count = key_count
+        self.screen = screen
+        self.clock = clock
+        self.tile_size = tile_size
+        self.numrows = numrows
+        self.numcols = numcols
+        self.map_factor = map_factor
+    
+    def update(self):
+        portal_hit_list = pygame.sprite.spritecollide(self, [self.player],False )
+        for x in portal_hit_list:
+            if self.player.key_inventory == self.key_count:
+                main_loop(self.screen, self.clock, self.tile_size, self.numrows, self.numcols, self.key_count, self.map_factor)
+                print("hit_portal_level_up")
+            else:
+              break  
+                
+                
+            
 
 class Key(pygame.sprite.Sprite):
     def __init__(self,image,x,y,col,row, dungeon, player):
@@ -54,11 +74,9 @@ class Key(pygame.sprite.Sprite):
         key_hit_list = pygame.sprite.spritecollide(self, [self.player],False )
         for x in key_hit_list:
             self.dungeon.tiles[self.col][self.row] = DungeonSqr('.')
-            print("boom")
+            self.player.key_inventory = self.player.key_inventory + 1
+            print(self.player.key_inventory)
             
-        
-
-
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,tile_size,speed,dungeon,wall_group,offset_x, offset_y, window_width, window_height):
         super().__init__()
@@ -190,7 +208,7 @@ class MiniMap(pygame.sprite.Sprite):
         
                              
                     
-def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player):        
+def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player, key_count, screen, clock, numrows, numcols, map_factor):        
     walls = []
     floors = []
     s_portal = []
@@ -218,10 +236,10 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
             elif v == "." or v == "c":
                 floors.append(Floor(floor_img, x, y))
             elif v == "p":
-                start_portal = Portal(portal_img, x, y)
+                start_portal = Portal(portal_img, x, y, my_player, key_count, screen, clock, tile_size, numrows, numcols, map_factor)
                 s_portal.append(start_portal)
             elif v == "ep":
-                end_portal = Portal(end_portal_img, x, y)
+                end_portal = Portal(end_portal_img, x, y, my_player, key_count, screen, clock, tile_size, numrows, numcols, map_factor)
                 e_portal.append(end_portal)
             elif v == "k":
                 keys.append(Key(key_img, x, y, j, i, dungeon, my_player))
@@ -230,7 +248,14 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
         #next colum
     #next row
     return (walls, floors, s_portal, e_portal, keys)
-                
+
+def show_keys_left(key_count,my_player,screen):
+    x = 10
+    y = 10
+    font = pygame.font.SysFont('m5x7', 40, True, False)
+    text = font.render("Keys Left: " + str(key_count - my_player.key_inventory),True,YELLOW_ISH)
+    screen.blit(text, (x,y))
+    
 def main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor):
     speed = 5
     
@@ -293,7 +318,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor)
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.player_set_speed(0,0)
         
-        (walls, floors, s_portal, e_portal, keys) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player)
+        (walls, floors, s_portal, e_portal, keys) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player, key_count, screen, clock, numrows, numcols, map_factor)
         dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
         # TODO remove old walls and floors, then add new ones and reset old ones
         
@@ -338,7 +363,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor)
         background_sprite_group.draw(screen)
         foreground_sprite_group.draw(screen)
         #flip display to show new position of objects
-        
+        show_keys_left(key_count,my_player,screen)
         
         
         pygame.display.flip()

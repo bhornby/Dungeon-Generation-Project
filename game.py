@@ -50,7 +50,7 @@ class Portal(pygame.sprite.Sprite):
         portal_hit_list = pygame.sprite.spritecollide(self, [self.player],False )
         for x in portal_hit_list:
             if self.player.key_inventory == self.key_count:
-                main_loop(self.screen, self.clock, self.tile_size, self.numrows, self.numcols, self.key_count, self.map_factor)
+                #main_loop(self.screen, self.clock, self.tile_size, self.numrows, self.numcols, self.key_count, self.map_factor)
                 self.player.key_inventory = 0
             else:
               break  

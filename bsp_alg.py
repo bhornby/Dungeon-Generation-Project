@@ -17,6 +17,25 @@ class Room:
         self.y = y
         self.width = width
         self.height = height
+    
+    def place_obj(self, obj_ask, obj_char, remaining_rooms, dungeon):
+        placed = 0
+        if obj_ask >= remaining_rooms:
+            print("spam")
+            p = 9
+        elif obj_ask > 0 :
+            p = randint(0, 10)
+            print(f"try {p}")
+        else:
+            p = 0
+            
+        if p > 6:
+            obj_x = randint(self.x, self.x + self.width - 1)
+            obj_y = randint(self.y, self.y + self.height - 1)
+            dungeon.tiles[obj_x][obj_y] = DungeonSqr(obj_char)
+            placed = placed + 1
+        return placed
+                
 
 class Corridor:
     def __init__(self, x, y, width, height):
@@ -88,7 +107,8 @@ class DungeonGenerator:
         if split:
             self.splits.append(split)
         #at the end of the random split you are left with the self.MAX number of leaves in the self.leaves list
-          
+    
+    
     def carve_rooms(self):
         remaining_rooms = len(self.leaves)
         count = 0
@@ -106,26 +126,15 @@ class DungeonGenerator:
             room_height = round(randrange(40, 90) / 100 * section_height)
             room_start_y = leaf[0] + round(randrange(0, 100) / 100 * (section_height - room_height))
             room_start_x = leaf[1] + round(randrange(0, 100) / 100 * (section_width - room_width))
-    
-            self.rooms.append(Room(room_start_x, room_start_y, room_width, room_height))
             
-            if self.key_count >= remaining_rooms:
-                print("spam")
-                p = 9
-            elif self.key_count > 0 :
-                p = randint(0, 10)
-                print(f"try {p}")
-            else:
-                p = 0
+            room = Room(room_start_x, room_start_y, room_width, room_height)
+            self.rooms.append(room)
+            
+            keys_placed = room.place_obj(self.key_count, 'k', remaining_rooms, self)
+            self.key_count = self.key_count - keys_placed
+            
+            count += keys_placed
                 
-            if p > 6:
-                self.key_count = self.key_count - 1
-                key_x = randint(room_start_x, room_start_x + room_width - 1)
-                key_y = randint(room_start_y, room_start_y + room_height - 1)
-                self.tiles[key_x][key_y] = DungeonSqr('k')
-                count = count + 1
-                
-                    
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
                     if self.tiles[x][y].tile != 'k':

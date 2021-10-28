@@ -51,7 +51,7 @@ class Portal(pygame.sprite.Sprite):
         for x in portal_hit_list:
             if self.player.key_inventory == self.key_count:
                 main_loop(self.screen, self.clock, self.tile_size, self.numrows, self.numcols, self.key_count, self.map_factor)
-                print("hit_portal_level_up")
+                self.player.key_inventory = 0
             else:
               break  
                 
@@ -75,7 +75,6 @@ class Key(pygame.sprite.Sprite):
         for x in key_hit_list:
             self.dungeon.tiles[self.col][self.row] = DungeonSqr('.')
             self.player.key_inventory = self.player.key_inventory + 1
-            print(self.player.key_inventory)
             
 class Player(pygame.sprite.Sprite): 
     def __init__(self,colour,tile_size,speed,dungeon,wall_group,offset_x, offset_y, window_width, window_height):

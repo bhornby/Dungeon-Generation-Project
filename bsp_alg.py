@@ -45,7 +45,7 @@ class Corridor:
         self.height = height
 
 class DungeonGenerator:
-    def __init__(self, width, height, key_count):
+    def __init__(self, width, height, key_count, enemy_count):
         self.MAX = 25 # Cutoff for when we want to stop splitting the tree
         self.width = width
         self.height = height
@@ -55,6 +55,7 @@ class DungeonGenerator:
         self.rooms = []
         self.corridors = []
         self.key_count = key_count
+        self.enemy_count = enemy_count
 
         
         for x in range(self.width):       
@@ -112,6 +113,7 @@ class DungeonGenerator:
     def carve_rooms(self):
         remaining_rooms = len(self.leaves)
         count = 0
+        e_count = 0
         for leaf in self.leaves:
             # We don't want to fill in every possible room or the  dungeon looks too uniform
             #if random() > 0.90: continue
@@ -129,21 +131,24 @@ class DungeonGenerator:
             
             room = Room(room_start_x, room_start_y, room_width, room_height)
             self.rooms.append(room)
-            
+        
             keys_placed = room.place_obj(self.key_count, 'k', remaining_rooms, self)
             self.key_count = self.key_count - keys_placed
-            
             count += keys_placed
-                
+            
+            enemies_placed = keys_placed = room.place_obj(self.enemy_count, 'e', remaining_rooms, self)
+            self.enemy_count = self.enemy_count - enemies_placed
+            e_count += enemies_placed
+         
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
-                    if self.tiles[x][y].tile != 'k':
+                    if self.tiles[x][y].tile != 'k' and self.tiles[x][y].tile != 'e':
                          self.tiles[x][y] = DungeonSqr('.')
                 
             remaining_rooms = remaining_rooms - 1
    
         self.key_count = count
-    
+        self.enemy_count = enemies_placed
     
     def carve_corridors(self):
         for (is_vert_split, (y, x)) in self.splits:

@@ -15,6 +15,7 @@ tile_size = 40
 numrows = 18
 numcols = 25
 
+enemy_count = 2
 key_count = 5
 map_factor = 2
 
@@ -195,14 +196,17 @@ def difficulty_menu():
                     
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if hard_button.isOver(pos):
+                    enemy_count = 8
                     key_count = 15
                     map_factor = 5
                     
                 if medium_button.isOver(pos):
+                    enemy_count = 5
                     key_count = 10
                     map_factor = 3
                     
                 if easy_button.isOver(pos):
+                    enemy_count = 2
                     key_count = 5
                     map_factor = 2
             

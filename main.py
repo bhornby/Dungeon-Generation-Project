@@ -279,7 +279,7 @@ def main_menu():
                     exit_game = False
                     level = 1
                     while not exit_game:
-                        exit_game = main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor, level)
+                        exit_game = main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor, level, enemy_count)
                         level = level + 1
                     display_menu()
                     

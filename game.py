@@ -160,28 +160,7 @@ class Player(pygame.sprite.Sprite):
                     #end if
             #next colum
         #next row            
-        
-        
-    def shift(self):
-        if self.rect.x > self.window_width - self.detection_zone:
-            self.offset_x += self.step_size
-            self.rect.x -= self.step_size
-                    
-        elif self.rect.x < self.detection_zone:
-            self.offset_x -= self.step_size
-            self.rect.x += self.step_size
-        
-        elif self.rect.y > self.window_height - self.detection_zone:
-            self.offset_y +=  self.step_size
-            self.rect.y -= self.step_size
-            
-        elif self.rect.y < self.detection_zone:
-            self.offset_y -= self.step_size
-            self.rect.y += self.step_size
-        else:
-            self.step_size = 2
-
-        
+                
     def update(self):     
         self.rect.x = self.rect.x + self.speed_x
         self.rect.y = self.rect.y + self.speed_y
@@ -193,7 +172,6 @@ class Player(pygame.sprite.Sprite):
             self.speed_x = 0
             self.speed_y = 0
         
-        self.shift()
         self.old_x = self.rect.x
         self.old_y = self.rect.y
 
@@ -250,9 +228,33 @@ class MiniMap(pygame.sprite.Sprite):
         
         gfxdraw.pixel(self.mini, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
         self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
-        
+       
                              
-                    
+def shift(player,foreground_group):
+
+    if player.rect.x > player.window_width - player.detection_zone:
+        player.offset_x += player.step_size
+        for i in foreground_group:
+            i.rect.x -= player.step_size
+                
+    elif player.rect.x < player.detection_zone:
+        player.offset_x -= player.step_size
+        for i in foreground_group:
+            i.rect.x += player.step_size
+    
+    elif player.rect.y > player.window_height - player.detection_zone:
+        player.offset_y +=  player.step_size
+        for i in foreground_group:
+            i.rect.y -= player.step_size
+        
+    elif player.rect.y < player.detection_zone:
+        player.offset_y -= player.step_size
+        for i in foreground_group:
+            i.rect.y += player.step_size
+    else:
+        player.step_size = 2                             
+                             
+                             
 def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player, wall_group, monster_group):        
     walls = []
     floors = []
@@ -431,6 +433,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         
         #update all sprites
         foreground_sprite_group.update()
+        shift(my_player,foreground_sprite_group)
         background_sprite_group.update()
         #screen background is black
         screen.fill(BLACK)

@@ -230,31 +230,27 @@ class MiniMap(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
        
                              
-def shift(player,foreground_group,dungeon_mini):
+def shift(player,foreground_group):
 
     if player.rect.x > player.window_width - player.detection_zone:
         player.offset_x += player.step_size
         for i in foreground_group:
-            if i != dungeon_mini:
-                i.rect.x -= player.step_size
+            i.rect.x -= player.step_size
                 
     elif player.rect.x < player.detection_zone:
         player.offset_x -= player.step_size
         for i in foreground_group:
-            if i != dungeon_mini:
-                i.rect.x += player.step_size
+            i.rect.x += player.step_size
     
     elif player.rect.y > player.window_height - player.detection_zone:
         player.offset_y +=  player.step_size
         for i in foreground_group:
-            if i != dungeon_mini:
-                i.rect.y -= player.step_size
+            i.rect.y -= player.step_size
         
     elif player.rect.y < player.detection_zone:
         player.offset_y -= player.step_size
         for i in foreground_group:
-            if i != dungeon_mini:
-                i.rect.y += player.step_size
+            i.rect.y += player.step_size
     else:
         player.step_size = 2                             
                              
@@ -437,7 +433,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         
         #update all sprites
         foreground_sprite_group.update()
-        shift(my_player,foreground_sprite_group,dungeon_mini)
+        shift(my_player,foreground_sprite_group)
         background_sprite_group.update()
         #screen background is black
         screen.fill(BLACK)

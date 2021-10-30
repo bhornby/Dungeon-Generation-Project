@@ -85,8 +85,8 @@ class Monster(pygame.sprite.Sprite):
         self.wall_group = wall_group
         self.speed_x = 0
         self.speed_y = 0
-        self.old_x = 0
-        self.old_y = 0
+        self.old_x = x
+        self.old_y = y
     
     
     def has_hit_wall(self):
@@ -95,20 +95,17 @@ class Monster(pygame.sprite.Sprite):
     
     
     def update(self):
-        i  = randint(0,19)
-        if i == 1:
-            self.direction()
-        
         if self.has_hit_wall():
             self.rect.x = self.old_x 
             self.rect.y = self.old_y 
             self.speed_x *= -1
             self.speed_y *= -1
-            return
         else:
+            i = randint(0,19)
+            if i == 1:
+                self.direction()
             self.old_x = self.rect.x
-            self.old_y = self.rect.y
-            
+            self.old_y = self.rect.y       
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
     
@@ -253,29 +250,33 @@ def shift(player,monster_group):
         player.offset_x += player.step_size
         player.rect.x -= player.step_size
         for i in monster_group:
-            i.old_x -= player.step_size
-            i.rect.x -= player.step_size
+            if i.old_x != 0:
+                i.old_x -= player.step_size
+                i.rect.x -= player.step_size
                 
     elif player.rect.x < player.detection_zone:
         player.offset_x -= player.step_size
         player.rect.x += player.step_size
         for i in monster_group:
-            i.old_x += player.step_size
-            i.rect.x += player.step_size
+            if i.old_x != 0:
+                i.old_x += player.step_size
+                i.rect.x += player.step_size
     
     elif player.rect.y > player.window_height - player.detection_zone:
         player.offset_y +=  player.step_size
         player.rect.y -= player.step_size
         for i in monster_group:
-            i.old_y -= player.step_size
-            i.rect.y -= player.step_size
+            if i.old_y != 0:
+                i.old_y -= player.step_size
+                i.rect.y -= player.step_size
         
     elif player.rect.y < player.detection_zone:
         player.offset_y -= player.step_size
         player.rect.y += player.step_size
         for i in monster_group:
-            i.old_y += player.step_size
-            i.rect.y += player.step_size
+            if i.old_y != 0:
+                i.old_y += player.step_size
+                i.rect.y += player.step_size
     else:
         player.step_size = 2
         
@@ -377,27 +378,22 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     
     dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
     mini_map_sprite_group.add(dungeon_mini)
-   
-    
-    
-    #exit game flag set to false
-    done = False
+
     old_walls = []
     old_floors = []
     old_s_portal = []
     old_e_portal = []
     old_keys = []
     old_monsters = []
-    while not done:
+    while True:
         #user input
         if my_player.key_inventory is None:
-            done = True
             my_player.key_inventory = 0
             return False
             
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = True
+                return True
              
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:#if left key is pressed
@@ -409,16 +405,23 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
                 elif event.key == pygame.K_DOWN:
                     my_player.set_speed(0,my_player.step_size)       
                 elif event.key == pygame.K_ESCAPE:
-                    done = True
                     return True
                     
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     my_player.set_speed(0,0)
         
+        
+        #update all sprites
+        mini_map_sprite_group.update()
+        background_sprite_group.update()
+        monster_group.update()
+        player_sprite_group.update()
+        
+        # modify offset
+        shift(my_player, monster_group)
         (walls, floors, s_portal, e_portal, keys, monsters) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player, wall_group, monster_group)
         dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
-        # TODO remove old walls and floors, then add new ones and reset old ones
         
         background_sprite_group.remove(old_walls)
         background_sprite_group.remove(old_floors)
@@ -453,16 +456,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         old_e_portal = e_portal
         old_keys = keys
         old_monsters = monsters
-        
-        
-        
-        #update all sprites
-        mini_map_sprite_group.update()
-        background_sprite_group.update()
-        monster_group.update()
-        player_sprite_group.update()
-        shift(my_player,monster_group)
-        
+     
         #screen background is black
         screen.fill(BLACK)
         
@@ -475,8 +469,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         #flip display to show new position of objects
         if my_player.key_inventory is not None:
             show_keys_left(dungeon.key_count,my_player,screen)
-        show_level(screen, level)
-        
+        show_level(screen, level)     
         
         pygame.display.flip()
         clock.tick(60)

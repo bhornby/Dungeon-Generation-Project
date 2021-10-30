@@ -21,11 +21,10 @@ class Room:
     def place_obj(self, obj_ask, obj_char, remaining_rooms, dungeon):
         placed = 0
         if obj_ask >= remaining_rooms:
-            print("spam")
             p = 9
         elif obj_ask > 0 :
             p = randint(0, 10)
-            print(f"try {p}")
+            
         else:
             p = 0
             

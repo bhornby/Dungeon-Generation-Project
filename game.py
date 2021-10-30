@@ -160,25 +160,30 @@ class Player(pygame.sprite.Sprite):
                     #end if
             #next colum
         #next row            
-                
-    def update(self):     
-        self.rect.x = self.rect.x + self.speed_x
-        self.rect.y = self.rect.y + self.speed_y
-        
+             
+             
+    def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
-        for x in wall_hit_list:
+        return len(wall_hit_list) > 0
+     
+     
+    def update(self):
+        if self.has_hit_wall():
             self.rect.x =  self.old_x 
             self.rect.y =  self.old_y 
             self.speed_x = 0
             self.speed_y = 0
-        
-        self.old_x = self.rect.x
-        self.old_y = self.rect.y
-
-                    
+        else:
+            self.old_x = self.rect.x
+            self.old_y = self.rect.y
+            self.rect.x += self.speed_x
+            self.rect.y += self.speed_y
+    
+    
     def set_speed(self,x,y):
         self.speed_x = x
         self.speed_y = y
+
 
 class MiniMap(pygame.sprite.Sprite):
     def __init__(self, width,height,colour, dungeon, tile_size, offset_x, offset_y, window_width, window_height):
@@ -231,6 +236,8 @@ class MiniMap(pygame.sprite.Sprite):
        
                              
 def shift(player,monster_group):
+    if player.has_hit_wall():
+        return
 
     if player.rect.x > player.window_width - player.detection_zone:
         player.offset_x += player.step_size
@@ -439,9 +446,9 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         
         
         #update all sprites
-        moving_sprite_group.update()
         foreground_sprite_group.update()
         background_sprite_group.update()
+        moving_sprite_group.update()
     
         shift(my_player,monster_group)
         #screen background is black

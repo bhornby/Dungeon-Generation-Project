@@ -4,7 +4,7 @@ import sys
 from bsp_alg import DungeonGenerator
 from pygame import gfxdraw
 from bsp_alg import DungeonSqr
-
+from random import randint
 YELLOW_ISH = (238,238,204)
 YELLOW = (255,255,0)
 RED = (255,0,0)
@@ -87,36 +87,37 @@ class Monster(pygame.sprite.Sprite):
         self.old_x = 0
         self.old_y = 0
         
-        def update():
-            i  = randint(0,3)
-            if i == 1:
-                self.direction()
-            
-            self.rect.x += self.speed_x
-            self.rect.y += self.speed_y
-            
+    def update(self):
+        print('p')
+        i  = randint(0,3)
+        if i == 1:
+            self.direction()
         
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+        
+    
 #             wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
 #             for x in wall_hit_list:
 #                 self.rect.x =  self.old_x 
 #                 self.rect.y =  self.old_y 
 #                 self.speed_x = 0
 #                 self.speed_y = 0
-        
-        def direction():
-            i = randint(0,3)
-            if i == 0:
-                self.speed_x = 2
-                self.speed_y = 0
-            elif i == 1:
-                self.speed_x = -2
-                self.speed_y = 0 
-            elif i == 2:
-                self.speed_y = 2
-                self.speed_x = 0 
-            elif i == 3:
-                self.speed_y = -2
-                self.speed_x = 0
+    
+    def direction(self):
+        i = randint(0,3)
+        if i == 0:
+            self.speed_x = 2
+            self.speed_y = 0
+        elif i == 1:
+            self.speed_x = -2
+            self.speed_y = 0 
+        elif i == 2:
+            self.speed_y = 2
+            self.speed_x = 0 
+        elif i == 3:
+            self.speed_y = -2
+            self.speed_x = 0
         
 
 class Player(pygame.sprite.Sprite): 
@@ -345,8 +346,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     window_height = numrows * tile_size
     
     background_sprite_group = pygame.sprite.Group()
-    foreground_sprite_group = pygame.sprite.Group()
-    moving_sprite_group = pygame.sprite.Group()
+    mini_map_sprite_group = pygame.sprite.Group()
+    player_sprite_group = pygame.sprite.Group()
     
     wall_group = pygame.sprite.Group()
     s_portal_group = pygame.sprite.Group()
@@ -359,10 +360,10 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     
     my_player = Player(YELLOW,tile_size,speed, dungeon, wall_group, 0, 0, window_width, window_height)
     my_player.locate(dungeon, tile_size)
-    moving_sprite_group.add(my_player)
+    player_sprite_group.add(my_player)
     
     dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
-    foreground_sprite_group.add(dungeon_mini)
+    mini_map_sprite_group.add(dungeon_mini)
    
     
     
@@ -418,9 +419,6 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         background_sprite_group.add(e_portal)
         background_sprite_group.add(keys)
         
-        background_sprite_group.remove(old_monsters)
-        background_sprite_group.add(monsters)
-        
         wall_group.remove(old_walls)
         wall_group.add(walls)
         
@@ -446,17 +444,21 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         
         
         #update all sprites
-        foreground_sprite_group.update()
+        mini_map_sprite_group.update()
         background_sprite_group.update()
-        moving_sprite_group.update()
-    
+        monster_group.update()
+        player_sprite_group.update()
         shift(my_player,monster_group)
+        
         #screen background is black
         screen.fill(BLACK)
+        
         #draw function
         background_sprite_group.draw(screen)
-        foreground_sprite_group.draw(screen)
-        moving_sprite_group.draw(screen)
+        mini_map_sprite_group.draw(screen)
+        player_sprite_group.draw(screen)
+        monster_group.draw(screen)
+        
         #flip display to show new position of objects
         if my_player.key_inventory is not None:
             show_keys_left(dungeon.key_count,my_player,screen)

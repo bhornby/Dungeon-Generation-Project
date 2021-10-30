@@ -310,6 +310,7 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
                 keys.append(Key(key_img, x, y, j, i, dungeon, my_player))
             elif v == "m":
                 existing = False
+                floors.append(Floor(floor_img, x, y))
                 for m in monster_group:
                     if m.col == j and m.row == i:
                         monsters.append(m)
@@ -317,7 +318,6 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
                         break
                 if not existing:
                     monsters.append(Monster(RED, x, y, tile_size, wall_group, j, i))
-        
                 #end if
         #next colum
     #next row

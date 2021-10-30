@@ -230,26 +230,26 @@ class MiniMap(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
        
                              
-def shift(player,foreground_group):
+def shift(player,moving_sprite_group):
 
     if player.rect.x > player.window_width - player.detection_zone:
         player.offset_x += player.step_size
-        for i in foreground_group:
+        for i in moving_sprite_group:
             i.rect.x -= player.step_size
                 
     elif player.rect.x < player.detection_zone:
         player.offset_x -= player.step_size
-        for i in foreground_group:
+        for i in moving_sprite_group:
             i.rect.x += player.step_size
     
     elif player.rect.y > player.window_height - player.detection_zone:
         player.offset_y +=  player.step_size
-        for i in foreground_group:
+        for i in moving_sprite_group:
             i.rect.y -= player.step_size
         
     elif player.rect.y < player.detection_zone:
         player.offset_y -= player.step_size
-        for i in foreground_group:
+        for i in moving_sprite_group:
             i.rect.y += player.step_size
     else:
         player.step_size = 2                             
@@ -334,6 +334,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     
     background_sprite_group = pygame.sprite.Group()
     foreground_sprite_group = pygame.sprite.Group()
+    moving_sprite_group = pygame.sprite.Group()
+    
     wall_group = pygame.sprite.Group()
     s_portal_group = pygame.sprite.Group()
     e_portal_group = pygame.sprite.Group()
@@ -345,7 +347,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     
     my_player = Player(YELLOW,tile_size,speed, dungeon, wall_group, 0, 0, window_width, window_height)
     my_player.locate(dungeon, tile_size)
-    foreground_sprite_group.add(my_player)
+    moving_sprite_group.add(my_player)
     
     dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
     foreground_sprite_group.add(dungeon_mini)
@@ -432,14 +434,16 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         
         
         #update all sprites
+        moving_sprite_group.update()
         foreground_sprite_group.update()
-        shift(my_player,foreground_sprite_group)
+        shift(my_player,moving_sprite_group)
         background_sprite_group.update()
         #screen background is black
         screen.fill(BLACK)
         #draw function
         background_sprite_group.draw(screen)
         foreground_sprite_group.draw(screen)
+        moving_sprite_group.draw(screen)
         #flip display to show new position of objects
         if my_player.key_inventory is not None:
             show_keys_left(dungeon.key_count,my_player,screen)

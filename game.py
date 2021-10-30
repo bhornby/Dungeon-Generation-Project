@@ -230,26 +230,30 @@ class MiniMap(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
        
                              
-def shift(player,moving_sprite_group):
+def shift(player,monster_group):
 
     if player.rect.x > player.window_width - player.detection_zone:
         player.offset_x += player.step_size
-        for i in moving_sprite_group:
+        player.rect.x -= player.step_size
+        for i in monster_group:
             i.rect.x -= player.step_size
                 
     elif player.rect.x < player.detection_zone:
         player.offset_x -= player.step_size
-        for i in moving_sprite_group:
+        player.rect.x += player.step_size
+        for i in monster_group:
             i.rect.x += player.step_size
     
     elif player.rect.y > player.window_height - player.detection_zone:
         player.offset_y +=  player.step_size
-        for i in moving_sprite_group:
+        player.rect.y -= player.step_size
+        for i in monster_group:
             i.rect.y -= player.step_size
         
     elif player.rect.y < player.detection_zone:
         player.offset_y -= player.step_size
-        for i in moving_sprite_group:
+        player.rect.y += player.step_size
+        for i in monster_group:
             i.rect.y += player.step_size
     else:
         player.step_size = 2
@@ -439,7 +443,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         foreground_sprite_group.update()
         background_sprite_group.update()
     
-        shift(my_player,moving_sprite_group)
+        shift(my_player,monster_group)
         #screen background is black
         screen.fill(BLACK)
         #draw function

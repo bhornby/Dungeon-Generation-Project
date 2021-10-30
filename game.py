@@ -87,27 +87,32 @@ class Monster(pygame.sprite.Sprite):
         self.speed_y = 0
         self.old_x = 0
         self.old_y = 0
-        
+    
+    
+    def has_hit_wall(self):
+        wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
+        return len(wall_hit_list) > 0
+    
+    
     def update(self):
         i  = randint(0,19)
         if i == 1:
             self.direction()
         
-        wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
-        for x in wall_hit_list:
-            self.rect.x =  self.old_x 
-            self.rect.y =  self.old_y 
+        if self.has_hit_wall():
+            self.rect.x = self.old_x 
+            self.rect.y = self.old_y 
             self.speed_x *= -1
             self.speed_y *= -1
             return
-        
-        self.old_x = self.rect.x
-        self.old_y = self.rect.y
-        
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
-        
-
+        else:
+            self.old_x = self.rect.x
+            self.old_y = self.rect.y
+            
+            self.rect.x += self.speed_x
+            self.rect.y += self.speed_y
+    
+    
     def direction(self):
         i = randint(0,3)
         if i == 0:
@@ -243,29 +248,33 @@ class MiniMap(pygame.sprite.Sprite):
 def shift(player,monster_group):
     if player.has_hit_wall():
         return
-
+        
     if player.rect.x > player.window_width - player.detection_zone:
         player.offset_x += player.step_size
         player.rect.x -= player.step_size
         for i in monster_group:
+            i.old_x -= player.step_size
             i.rect.x -= player.step_size
                 
     elif player.rect.x < player.detection_zone:
         player.offset_x -= player.step_size
         player.rect.x += player.step_size
         for i in monster_group:
+            i.old_x += player.step_size
             i.rect.x += player.step_size
     
     elif player.rect.y > player.window_height - player.detection_zone:
         player.offset_y +=  player.step_size
         player.rect.y -= player.step_size
         for i in monster_group:
+            i.old_y -= player.step_size
             i.rect.y -= player.step_size
         
     elif player.rect.y < player.detection_zone:
         player.offset_y -= player.step_size
         player.rect.y += player.step_size
         for i in monster_group:
+            i.old_y += player.step_size
             i.rect.y += player.step_size
     else:
         player.step_size = 2

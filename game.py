@@ -5,6 +5,7 @@ from bsp_alg import DungeonGenerator
 from pygame import gfxdraw
 from bsp_alg import DungeonSqr
 from random import randint
+
 YELLOW_ISH = (238,238,204)
 YELLOW = (255,255,0)
 RED = (255,0,0)
@@ -88,22 +89,25 @@ class Monster(pygame.sprite.Sprite):
         self.old_y = 0
         
     def update(self):
-        print('p')
-        i  = randint(0,3)
+        i  = randint(0,19)
         if i == 1:
             self.direction()
+        
+        wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
+        for x in wall_hit_list:
+            self.rect.x =  self.old_x 
+            self.rect.y =  self.old_y 
+            self.speed_x *= -1
+            self.speed_y *= -1
+            return
+        
+        self.old_x = self.rect.x
+        self.old_y = self.rect.y
         
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
         
-    
-#             wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
-#             for x in wall_hit_list:
-#                 self.rect.x =  self.old_x 
-#                 self.rect.y =  self.old_y 
-#                 self.speed_x = 0
-#                 self.speed_y = 0
-    
+
     def direction(self):
         i = randint(0,3)
         if i == 0:

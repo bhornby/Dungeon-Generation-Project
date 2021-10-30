@@ -139,7 +139,7 @@ class Player(pygame.sprite.Sprite):
         self.offset_y = offset_y
         self.old_x = 0
         self.old_y = 0
-        self.step_size= 10
+        self.step_size = 10
         
         
     def locate(self, dungeon, tile_size):        
@@ -176,7 +176,7 @@ class Player(pygame.sprite.Sprite):
         self.old_y = self.rect.y
 
                     
-    def player_set_speed(self,x,y):
+    def set_speed(self,x,y):
         self.speed_x = x
         self.speed_y = y
 
@@ -252,7 +252,8 @@ def shift(player,moving_sprite_group):
         for i in moving_sprite_group:
             i.rect.y += player.step_size
     else:
-        player.step_size = 2                             
+        player.step_size = 2
+        
                              
                              
 def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player, wall_group, monster_group):        
@@ -375,20 +376,20 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
              
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:#if left key is pressed
-                    my_player.player_set_speed(-2,0)    
+                    my_player.set_speed(-my_player.step_size,0)    
                 elif event.key == pygame.K_RIGHT:
-                    my_player.player_set_speed(2,0)       
+                    my_player.set_speed(my_player.step_size,0)       
                 elif event.key == pygame.K_UP:
-                    my_player.player_set_speed(0,-2)        
+                    my_player.set_speed(0,-my_player.step_size)        
                 elif event.key == pygame.K_DOWN:
-                    my_player.player_set_speed(0,2)       
+                    my_player.set_speed(0,my_player.step_size)       
                 elif event.key == pygame.K_ESCAPE:
                     done = True
                     return True
                     
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    my_player.player_set_speed(0,0)
+                    my_player.set_speed(0,0)
         
         (walls, floors, s_portal, e_portal, keys, monsters) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player, wall_group, monster_group)
         dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
@@ -436,8 +437,9 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         #update all sprites
         moving_sprite_group.update()
         foreground_sprite_group.update()
-        shift(my_player,moving_sprite_group)
         background_sprite_group.update()
+    
+        shift(my_player,moving_sprite_group)
         #screen background is black
         screen.fill(BLACK)
         #draw function
@@ -451,6 +453,6 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         
         
         pygame.display.flip()
-        clock.tick(240)
+        clock.tick(60)
 #end game loop
 # end function

@@ -92,7 +92,7 @@ class Monster(pygame.sprite.Sprite):
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
         for w in wall_hit_list:
-            print(f"monster {self.rect.x},{self.rect.y} hit {w.rect.x},{w.rect.y} old {self.old_x},{self.old_y}")
+#             print(f"monster {self.rect.x},{self.rect.y} hit {w.rect.x},{w.rect.y} old {self.old_x},{self.old_y}")
             return w
         return False
     
@@ -404,7 +404,7 @@ def show_life(screen, life_count):
     
 def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor, level, enemy_count, life_count):
     speed = 5
-    
+    print(life_count)
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("brick.png").convert(),(tile_size,tile_size))
     FLOOR_IMAGE = pygame.transform.scale(pygame.image.load("floorcolour.png").convert(),(tile_size,tile_size))
     PORTAL_IMAGE = pygame.transform.scale(pygame.image.load("PORTAL_final.png").convert(),(tile_size,tile_size))
@@ -460,7 +460,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
                 elif event.key == pygame.K_DOWN:
                     my_player.set_speed(0,my_player.step_size)       
                 elif event.key == pygame.K_ESCAPE:
-                    return True
+                    return (True,None)
                     
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
@@ -528,6 +528,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         show_life(screen, my_player.life_count)
         
         if my_player.life_count <= 0:
+            print("died")
             return (True, level)
         
         pygame.display.flip()

@@ -18,8 +18,8 @@ numcols = 25
 enemy_count = 10
 key_count = 5
 map_factor = 2
-life_count = 5
 difficulty = "EASY"
+life_count = 5
 
 
 #black screen
@@ -139,6 +139,8 @@ def difficulty_menu():
     
     global key_count
     global map_factor
+    global difficulty
+    global life_count 
     
     difficulty = True
     
@@ -199,45 +201,45 @@ def difficulty_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if hard_button.isOver(pos):
                     enemy_count = 8
-                    key_count = 15
+                    key_count = 25
                     map_factor = 5
                     life_count = 1
-                    difficulty = "HARD"
+                    difficulty = "Hard"
                     
                 if medium_button.isOver(pos):
                     enemy_count = 5
-                    key_count = 10
+                    key_count = 15
                     map_factor = 3
                     life_count = 3
-                    difficulty = "MEDIUM"
+                    difficulty = "Medium"
                     
                 if easy_button.isOver(pos):
                     enemy_count = 2
                     key_count = 5
                     map_factor = 2
                     life_count = 5
-                    difficulty = "EASY"
+                    difficulty = "Easy"
                     
         pygame.display.update()
-        clock.ti
-        ck(60)
+        clock.tick(60)
 
 def game_over_menu(level_reached):
     menu = True
     
-    button_1 = Button(screen.get_width()//2 - 125, screen.get_height()//3, 250, 50, RED,('LEVEL REACHED: ') + str(level_reached))
-    button_2 = Button(screen.get_width()//2 - 125, screen.get_height()//2, 250, 50, RED, ('DIFFICULTY: ') + str(difficulty) )
-    button_3 = Button(screen.get_width()//2 - 125, screen.get_height()//2.4, 250, 50, RED, 'RETURN TO MENU')
+    button_1 = Button(screen.get_width()//2 - 125, screen.get_height()//2.4, 250, 50, RED,('Level Reached: ') + str(level_reached))
+    button_2 = Button(screen.get_width()//2 - 125, screen.get_height()//3, 250, 50, RED, ('Difficulty: ') + str(difficulty) )
+    button_3 = Button(screen.get_width()//2 - 125, screen.get_height()//2, 250, 50, RED, 'Return To Menu')
     
     def display_menu():
-        font = pygame.font.SysFont('m5x7', 70)
+        font = pygame.font.SysFont('m5x7', 100)
         screen.fill(WHITE)
-        draw_text('GAME OVER', font , BLACK, screen,screen)
+        draw_text('Game Over', font , BLACK, screen,screen)
 
         button_1.draw(screen, BLACK)
         button_2.draw(screen, BLACK)
         button_3.draw(screen, BLACK)
     
+    display_menu()
     while menu:
         
         pos = pygame.mouse.get_pos()
@@ -248,6 +250,37 @@ def game_over_menu(level_reached):
                     print("done")
                     menu = False
         
+            if event.type == pygame.MOUSEMOTION:
+                    if button_1.isOver(pos):
+                        button_1.color = LIGHT_RED
+                        button_1.draw(screen, BLACK)
+                    
+                    else:
+                        button_1.color = RED
+                        button_1.draw(screen, BLACK)
+                        
+                        
+                    if button_2.isOver(pos):
+                        button_2.color = LIGHT_RED
+                        button_2.draw(screen, BLACK)
+                    
+                    else:
+                        button_2.color = RED
+                        button_2.draw(screen, BLACK)
+                    
+                    if button_3.isOver(pos):
+                        button_3.color = LIGHT_RED
+                        button_3.draw(screen, BLACK)
+                    
+                    else:
+                        button_3.color = RED
+                        button_3.draw(screen, BLACK)
+                        
+            if event.type == pygame.MOUSEBUTTONDOWN:    
+                if button_3.isOver(pos):
+                    print("done")
+                    menu = False
+                    
         pygame.display.update()
         clock.tick(60)
         

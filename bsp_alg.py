@@ -1,7 +1,6 @@
 
 from random import random
 from random import randrange
-from random import choice
 from random import randint
 
 class DungeonSqr:
@@ -57,9 +56,9 @@ class DungeonGenerator:
         self.enemy_count = enemy_count
 
         
-        for x in range(self.width):       
+        for _x in range(self.width):       
             col = []
-            for y in range(self.height):
+            for _y in range(self.height):
                 col.append(DungeonSqr('#'))
             self.tiles.append(col)
         
@@ -118,8 +117,6 @@ class DungeonGenerator:
             #if random() > 0.90: continue
             section_width = leaf[3] - leaf[1]
             section_height = leaf[2] - leaf[0]
-            key_x = None
-            key_y = None
 
             # The actual room's height and width will be 60-90% of the 
             # available section.
@@ -142,7 +139,7 @@ class DungeonGenerator:
             for y in range(room_start_y, room_start_y + room_height):
                 for x in range(room_start_x, room_start_x + room_width):
                     if self.tiles[x][y].tile != 'k' and self.tiles[x][y].tile != 'm':
-                         self.tiles[x][y] = DungeonSqr('.')
+                        self.tiles[x][y] = DungeonSqr('.')
                 
             remaining_rooms = remaining_rooms - 1
    

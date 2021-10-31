@@ -44,7 +44,7 @@ class Button():
         
         if self.text != '':
             font = pygame.font.SysFont('m5x7', 40)
-            text = font.render(self.text, 1, (0,0,0))
+            text = font.render(self.text, True, (0,0,0))
             screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
 
     def isOver(self, pos):

@@ -1,6 +1,4 @@
-import random
 import pygame
-import sys
 from bsp_alg import DungeonGenerator
 from pygame import gfxdraw
 from bsp_alg import DungeonSqr
@@ -98,8 +96,8 @@ class Monster(pygame.sprite.Sprite):
         if self.has_hit_wall():
             self.rect.x = self.old_x 
             self.rect.y = self.old_y 
-            self.speed_x *= -1
-            self.speed_y *= -1
+            self.speed_x = 0
+            self.speed_y = 0
         else:
             i = randint(0,19)
             if i == 1:

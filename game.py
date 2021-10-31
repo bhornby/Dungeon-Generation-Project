@@ -145,11 +145,12 @@ class Monster(pygame.sprite.Sprite):
         
 
 class Player(pygame.sprite.Sprite): 
-    def __init__(self,colour,tile_size,wall_group,offset_x, offset_y, window_width, window_height):
+    def __init__(self,colour,tile_size,wall_group,offset_x, offset_y, window_width, window_height, monster_group, life_count):
         super().__init__()
         
         #set player dimentions
         self.wall_group = wall_group
+        self.monster_group = monster_group
         self.speed_x = 0
         self.speed_y = 0
         self.image = pygame.Surface([tile_size//2,tile_size//2])
@@ -165,6 +166,7 @@ class Player(pygame.sprite.Sprite):
         self.old_x = 0
         self.old_y = 0
         self.step_size = 10
+        self.life_count = life_count
         
         
     def locate(self, dungeon, tile_size):        
@@ -190,7 +192,15 @@ class Player(pygame.sprite.Sprite):
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
         return len(wall_hit_list) > 0
-     
+    
+    def has_hit_monster(self):
+        monster_hit_list = pygame.sprite.spritecollide(self, self.monster_group, False)
+        for m in monster_hit_list:
+            m.rect.x = m.old_x
+            m.rect.y = m.old_y
+            m.speed_x = 0
+            m.speed_y = 0
+        return len(monster_hit_list) > 0
      
     def update(self):
         if self.has_hit_wall():
@@ -198,13 +208,20 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = self.old_y
             self.speed_x = 0
             self.speed_y = 0
+            
+        elif self.has_hit_monster():
+            self.life_count = self.life_count  - 1
+            self.rect.x = self.old_x
+            self.rect.y = self.old_y
+            self.speed_x = 0
+            self.speed_y = 0
+            
         else:
             self.old_x = self.rect.x
             self.old_y = self.rect.y
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
-    
-    
+
     def set_speed(self,x,y):
         self.speed_x = x
         self.speed_y = y
@@ -376,8 +393,16 @@ def show_level(screen, level):
     font = pygame.font.SysFont('m5x7', 40, True, False)
     text = font.render("Level: " + str(level),True,YELLOW_ISH)
     screen.blit(text, (x,y))
+
+def show_life(screen, life_count):
+    x = 10
+    y = 90
+    font = pygame.font.SysFont('m5x7', 40, True, False)
+    text = font.render("Hearts: " + str(life_count),True,YELLOW_ISH)
+    screen.blit(text, (x,y))
     
-def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor, level, enemy_count):
+    
+def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor, level, enemy_count, life_count):
     speed = 5
     
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("brick.png").convert(),(tile_size,tile_size))
@@ -402,7 +427,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     dungeon = DungeonGenerator(numcols * map_factor, numrows * map_factor, keys_asked, enemy_count)
     dungeon.generate_map()
     
-    my_player = Player(YELLOW,tile_size, wall_group, 0, 0, window_width, window_height)
+    my_player = Player(YELLOW,tile_size, wall_group, 0, 0, window_width, window_height, monster_group, life_count)
     my_player.locate(dungeon, tile_size)
     player_sprite_group.add(my_player)
     
@@ -499,7 +524,8 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         #flip display to show new position of objects
         if my_player.key_inventory is not None:
             show_keys_left(dungeon.key_count,my_player,screen)
-        show_level(screen, level)     
+        show_level(screen, level)
+        show_life(screen, my_player.life_count)
         
         pygame.display.flip()
         clock.tick(60)

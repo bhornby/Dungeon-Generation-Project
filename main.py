@@ -18,6 +18,7 @@ numcols = 25
 enemy_count = 10
 key_count = 5
 map_factor = 2
+life_count = 5
 
 
 #black screen
@@ -199,16 +200,19 @@ def difficulty_menu():
                     enemy_count = 8
                     key_count = 15
                     map_factor = 5
+                    life_count = 1
                     
                 if medium_button.isOver(pos):
                     enemy_count = 5
                     key_count = 10
                     map_factor = 3
+                    life_count = 3
                     
                 if easy_button.isOver(pos):
                     enemy_count = 2
                     key_count = 5
                     map_factor = 2
+                    life_count = 5
             
                     
         pygame.display.update()
@@ -279,7 +283,7 @@ def main_menu():
                     exit_game = False
                     level = 1
                     while not exit_game:
-                        exit_game = main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor, level, enemy_count)
+                        exit_game = main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor, level, enemy_count, life_count)
                         level = level + 1
                     display_menu()
                     

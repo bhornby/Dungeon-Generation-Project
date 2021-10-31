@@ -174,8 +174,8 @@ class Player(pygame.sprite.Sprite):
      
     def update(self):
         if self.has_hit_wall():
-            self.rect.x =  self.old_x 
-            self.rect.y =  self.old_y 
+            self.rect.x = self.old_x
+            self.rect.y = self.old_y
             self.speed_x = 0
             self.speed_y = 0
         else:
@@ -240,7 +240,7 @@ class MiniMap(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
        
                              
-def shift(player,monster_group):
+def shift(player, monster_group):
     if player.has_hit_wall():
         return
         
@@ -288,10 +288,11 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
     keys = []
     monsters = []
     
+    buffer = 1
     a = ((my_player.offset_y // tile_size))
-    b = (((my_player.offset_y + window_height) // tile_size)) + 1 
+    b = (((my_player.offset_y + window_height) // tile_size)) + buffer
     c = ((my_player.offset_x // tile_size))
-    d = (((my_player.offset_x + window_width) // tile_size)) + 1
+    d = (((my_player.offset_x + window_width) // tile_size)) + buffer
     
     if b >= dungeon.height:
         b = dungeon.height - 1

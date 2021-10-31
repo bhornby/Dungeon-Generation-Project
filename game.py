@@ -14,12 +14,14 @@ COLOUR_DARK_FLOOR = (50, 50, 150)
 
 
 class Wall(pygame.sprite.Sprite):
-    def __init__(self,image,x,y):
+    def __init__(self,image,x,y,col,row):
         super().__init__()
         self.image = image
         self.rect = image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.col = col
+        self.row = row
 
 class Floor(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
@@ -94,10 +96,10 @@ class Monster(pygame.sprite.Sprite):
     
     def update(self):
         if self.has_hit_wall():
-            self.rect.x = self.old_x 
-            self.rect.y = self.old_y 
-            self.speed_x = 0
-            self.speed_y = 0
+            self.speed_x *= -1
+            self.speed_y *= -1
+            self.rect.x = self.old_x + self.speed_x
+            self.rect.y = self.old_y + self.speed_y
         else:
             i = randint(0,19)
             if i == 1:
@@ -240,7 +242,7 @@ class MiniMap(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
        
                              
-def shift(player, monster_group):
+def shift(player, monster_group, wall_group):
     if player.has_hit_wall():
         return
         
@@ -248,39 +250,43 @@ def shift(player, monster_group):
         player.offset_x += player.step_size
         player.rect.x -= player.step_size
         for i in monster_group:
-            if i.old_x != 0:
-                i.old_x -= player.step_size
-                i.rect.x -= player.step_size
+            i.old_x -= player.step_size
+            i.rect.x -= player.step_size
+        for i in wall_group:
+            i.rect.x -= player.step_size
                 
     elif player.rect.x < player.detection_zone:
         player.offset_x -= player.step_size
         player.rect.x += player.step_size
         for i in monster_group:
-            if i.old_x != 0:
-                i.old_x += player.step_size
-                i.rect.x += player.step_size
+            i.old_x += player.step_size
+            i.rect.x += player.step_size
+        for i in wall_group:
+            i.rect.x += player.step_size
     
     elif player.rect.y > player.window_height - player.detection_zone:
         player.offset_y +=  player.step_size
         player.rect.y -= player.step_size
         for i in monster_group:
-            if i.old_y != 0:
-                i.old_y -= player.step_size
-                i.rect.y -= player.step_size
+            i.old_y -= player.step_size
+            i.rect.y -= player.step_size
+        for i in wall_group:
+            i.rect.y -= player.step_size
         
     elif player.rect.y < player.detection_zone:
         player.offset_y -= player.step_size
         player.rect.y += player.step_size
         for i in monster_group:
-            if i.old_y != 0:
-                i.old_y += player.step_size
-                i.rect.y += player.step_size
+            i.old_y += player.step_size
+            i.rect.y += player.step_size
+        for i in wall_group:
+            i.rect.y += player.step_size
     else:
         player.step_size = 2
         
                              
                              
-def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size,window_width, window_height, my_player, wall_group, monster_group):        
+def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, key_img, tile_size, window_width, window_height, my_player, wall_group, monster_group):        
     walls = []
     floors = []
     s_portal = []
@@ -306,7 +312,14 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
             y = (i * tile_size - my_player.offset_y)
             v = dungeon.tiles[j][i].tile
             if v == "#":
-                walls.append(Wall(wall_img, x, y))
+                existing = False
+                for w in wall_group:
+                    if w.col == j and w.row == i:
+                        walls.append(w)
+                        existing=True
+                        break
+                if not existing:
+                    walls.append(Wall(wall_img, x, y, j, i))
             elif v == "." or v == "c":
                 floors.append(Floor(floor_img, x, y))
             elif v == "p":
@@ -414,11 +427,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         #update all sprites
         mini_map_sprite_group.update()
         background_sprite_group.update()
-        monster_group.update()
         player_sprite_group.update()
+        monster_group.update()
         
         # modify offset
-        shift(my_player, monster_group)
+        shift(my_player, monster_group, wall_group)
         (walls, floors, s_portal, e_portal, keys, monsters) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player, wall_group, monster_group)
         dungeon_mini.reveal(dungeon, tile_size, window_width, window_height, my_player)
         

@@ -91,15 +91,33 @@ class Monster(pygame.sprite.Sprite):
     
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
-        return len(wall_hit_list) > 0
+        for w in wall_hit_list:
+            print(f"monster {self.rect.x},{self.rect.y} hit {w.rect.x},{w.rect.y} old {self.old_x},{self.old_y}")
+            return w
+        return False
     
     
     def update(self):
-        if self.has_hit_wall():
+        w = self.has_hit_wall()
+        if w:
             self.speed_x *= -1
             self.speed_y *= -1
-            self.rect.x = self.old_x + self.speed_x
-            self.rect.y = self.old_y + self.speed_y
+            self.rect.x = self.old_x
+            self.rect.y = self.old_y
+            w = self.has_hit_wall()
+            if w:
+                x_diff = self.rect.x - w.rect.x 
+                y_diff = self.rect.y - w.rect.y
+                if x_diff > 0 and x_diff < w.rect.width:
+                    self.rect.x += w.rect.width - x_diff
+                elif x_diff < 0 and x_diff > -w.rect.width:
+                    self.rect.x -= w.rect.width + x_diff
+                if y_diff > 0 and y_diff < w.rect.height:
+                    self.rect.y += w.rect.height - y_diff
+                elif y_diff < 0 and y_diff > -w.rect.height:
+                    self.rect.y -= w.rect.height + y_diff
+                self.old_x = self.rect.x
+                self.old_y = self.rect.y
         else:
             i = randint(0,19)
             if i == 1:

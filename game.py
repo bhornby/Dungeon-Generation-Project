@@ -17,7 +17,7 @@ class Wall(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
         super().__init__()
         self.image = image
-        self.rect = self.image.get_rect()
+        self.rect = image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
@@ -25,7 +25,7 @@ class Floor(pygame.sprite.Sprite):
     def __init__(self,image,x,y):
         super().__init__()
         self.image = image
-        self.rect = self.image.get_rect()
+        self.rect = image.get_rect()
         self.rect.x = x
         self.rect.y = y
         
@@ -33,7 +33,7 @@ class Portal(pygame.sprite.Sprite):
     def __init__(self, image, x, y, player, key_count):
         super().__init__()
         self.image = image
-        self.rect = self.image.get_rect()
+        self.rect = image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.player = player
@@ -42,7 +42,7 @@ class Portal(pygame.sprite.Sprite):
     
     def update(self):
         portal_hit_list = pygame.sprite.spritecollide(self, [self.player],False )
-        for x in portal_hit_list:
+        for _x in portal_hit_list:
             if self.player.key_inventory == self.key_count:
                 self.player.key_inventory = None
  
@@ -51,7 +51,7 @@ class Key(pygame.sprite.Sprite):
     def __init__(self,image,x,y,col,row, dungeon, player):
         super().__init__()
         self.image = image
-        self.rect = self.image.get_rect()
+        self.rect = image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.col = col
@@ -61,7 +61,7 @@ class Key(pygame.sprite.Sprite):
         
     def update(self):
         key_hit_list = pygame.sprite.spritecollide(self, [self.player],False )
-        for x in key_hit_list:
+        for _x in key_hit_list:
             self.dungeon.tiles[self.col][self.row] = DungeonSqr('.')
             self.player.key_inventory = self.player.key_inventory + 1
    
@@ -125,7 +125,7 @@ class Monster(pygame.sprite.Sprite):
         
 
 class Player(pygame.sprite.Sprite): 
-    def __init__(self,colour,tile_size,speed,dungeon,wall_group,offset_x, offset_y, window_width, window_height):
+    def __init__(self,colour,tile_size,wall_group,offset_x, offset_y, window_width, window_height):
         super().__init__()
         
         #set player dimentions
@@ -191,7 +191,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class MiniMap(pygame.sprite.Sprite):
-    def __init__(self, width,height,colour, dungeon, tile_size, offset_x, offset_y, window_width, window_height):
+    def __init__(self, width,height,colour, window_width):
         super().__init__()
         self.width = width
         self.height = height
@@ -370,11 +370,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     dungeon = DungeonGenerator(numcols * map_factor, numrows * map_factor, keys_asked, enemy_count)
     dungeon.generate_map()
     
-    my_player = Player(YELLOW,tile_size,speed, dungeon, wall_group, 0, 0, window_width, window_height)
+    my_player = Player(YELLOW,tile_size, wall_group, 0, 0, window_width, window_height)
     my_player.locate(dungeon, tile_size)
     player_sprite_group.add(my_player)
     
-    dungeon_mini = MiniMap(dungeon.width,dungeon.height,BLACK, dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height)
+    dungeon_mini = MiniMap(dungeon.width, dungeon.height, BLACK, window_width)
     mini_map_sprite_group.add(dungeon_mini)
 
     old_walls = []

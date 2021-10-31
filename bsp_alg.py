@@ -189,9 +189,9 @@ class DungeonGenerator:
                     self.corridors.append(obj)
             
             if obj:
-                for y in range(obj.y, obj.y + obj.height):
-                    for x in range(obj.x, obj.x + obj.width):
-                        self.tiles[x][y] = DungeonSqr('c')
+                for yy in range(obj.y, obj.y + obj.height):
+                    for xx in range(obj.x, obj.x + obj.width):
+                        self.tiles[xx][yy] = DungeonSqr('c')
 
     def carve_portal(self):
         for y in range(self.height):

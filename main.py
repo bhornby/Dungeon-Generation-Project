@@ -200,17 +200,17 @@ def difficulty_menu():
                     
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if hard_button.isOver(pos):
-                    enemy_count = 8
-                    key_count = 25
+                    enemy_count = 25
+                    key_count = 20
                     map_factor = 5
                     life_count = 1
                     difficulty = "Hard"
                     
                 if medium_button.isOver(pos):
-                    enemy_count = 5
+                    enemy_count = 15
                     key_count = 15
                     map_factor = 3
-                    life_count = 3
+                    life_count = 5
                     difficulty = "Medium"
                     
                 if easy_button.isOver(pos):

@@ -19,6 +19,7 @@ enemy_count = 10
 key_count = 5
 map_factor = 2
 life_count = 5
+difficulty = "EASY"
 
 
 #black screen
@@ -201,24 +202,56 @@ def difficulty_menu():
                     key_count = 15
                     map_factor = 5
                     life_count = 1
+                    difficulty = "HARD"
                     
                 if medium_button.isOver(pos):
                     enemy_count = 5
                     key_count = 10
                     map_factor = 3
                     life_count = 3
+                    difficulty = "MEDIUM"
                     
                 if easy_button.isOver(pos):
                     enemy_count = 2
                     key_count = 5
                     map_factor = 2
                     life_count = 5
-            
+                    difficulty = "EASY"
                     
         pygame.display.update()
-        clock.tick(60)               
-    
+        clock.ti
+        ck(60)
 
+def game_over_menu(level_reached):
+    menu = True
+    
+    button_1 = Button(screen.get_width()//2 - 125, screen.get_height()//3, 250, 50, RED,('LEVEL REACHED: ') + str(level_reached))
+    button_2 = Button(screen.get_width()//2 - 125, screen.get_height()//2, 250, 50, RED, ('DIFFICULTY: ') + str(difficulty) )
+    button_3 = Button(screen.get_width()//2 - 125, screen.get_height()//2.4, 250, 50, RED, 'RETURN TO MENU')
+    
+    def display_menu():
+        font = pygame.font.SysFont('m5x7', 70)
+        screen.fill(WHITE)
+        draw_text('GAME OVER', font , BLACK, screen,screen)
+
+        button_1.draw(screen, BLACK)
+        button_2.draw(screen, BLACK)
+        button_3.draw(screen, BLACK)
+    
+    while menu:
+        
+        pos = pygame.mouse.get_pos()
+         
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    print("done")
+                    menu = False
+        
+        pygame.display.update()
+        clock.tick(60)
+        
+        
 def main_menu():
     from game import main_loop
     menu = True
@@ -283,8 +316,11 @@ def main_menu():
                     exit_game = False
                     level = 1
                     while not exit_game:
-                        exit_game = main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor, level, enemy_count, life_count)
-                        level = level + 1
+                        (exit_game, level_reached) = main_loop(screen, clock, tile_size, numrows, numcols, key_count, map_factor, level, enemy_count, life_count)
+                        if level_reached:
+                            game_over_menu(level_reached)
+                        else:
+                            level = level + 1
                     display_menu()
                     
                 if button_2.isOver(pos):

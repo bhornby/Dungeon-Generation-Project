@@ -444,11 +444,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         #user input
         if my_player.key_inventory is None:
             my_player.key_inventory = 0
-            return False
+            return (False, None)
             
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True
+                return (True, None)
              
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:#if left key is pressed
@@ -526,6 +526,9 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
             show_keys_left(dungeon.key_count,my_player,screen)
         show_level(screen, level)
         show_life(screen, my_player.life_count)
+        
+        if my_player.life_count <= 0:
+            return (True, level)
         
         pygame.display.flip()
         clock.tick(60)

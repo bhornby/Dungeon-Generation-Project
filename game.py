@@ -204,12 +204,12 @@ class MiniMap(pygame.sprite.Sprite):
         self.rect.y = 10
         
         
-    def reveal(self, dungeon, tile_size, offset_x, offset_y, window_width, window_height,player_x, player_y):
+    def reveal(self, dungeon, tile_size,window_width, window_height, player):
         colour = None
-        a = ((offset_y // tile_size))
-        b = (((offset_y + window_height) // tile_size)) + 1
-        c = ((offset_x // tile_size))
-        d = (((offset_x + window_width) // tile_size)) + 1
+        a = ((player.offset_y // tile_size))
+        b = (((player.offset_y + window_height) // tile_size)) + 1
+        c = ((player.offset_x // tile_size))
+        d = (((player.offset_x + window_width) // tile_size)) + 1
         
         if b >= dungeon.height:
             b = dungeon.height - 1
@@ -236,7 +236,7 @@ class MiniMap(pygame.sprite.Sprite):
                     colour = RED
                 gfxdraw.pixel(self.mini, j, i, colour)
         
-        gfxdraw.pixel(self.mini, (player_x + offset_x)// tile_size, (player_y + offset_y) // tile_size, YELLOW)
+        gfxdraw.pixel(self.mini, (player.rect.x + player.offset_x)// tile_size, (player.rect.y + player.offset_y) // tile_size, YELLOW)
         self.image = pygame.transform.scale(self.mini, (self.scale * self.width, self.scale * self.height)) 
        
                              
@@ -419,7 +419,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         # modify offset
         shift(my_player, monster_group)
         (walls, floors, s_portal, e_portal, keys, monsters) = render_pygame_map(dungeon, WALL_IMAGE, FLOOR_IMAGE, PORTAL_IMAGE, END_PORTAL_IMAGE, KEY_IMAGE, tile_size, window_width, window_height, my_player, wall_group, monster_group)
-        dungeon_mini.reveal(dungeon, tile_size, my_player.offset_x, my_player.offset_y, window_width, window_height,my_player.rect.x, my_player.rect.y)
+        dungeon_mini.reveal(dungeon, tile_size, window_width, window_height, my_player)
         
         background_sprite_group.remove(old_walls)
         background_sprite_group.remove(old_floors)

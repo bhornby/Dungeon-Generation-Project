@@ -11,6 +11,7 @@ BLUE = (173, 216, 230)
 BLACK = (0,0,0)
 COLOUR_DARK_WALL = (0, 0, 100)
 COLOUR_DARK_FLOOR = (50, 50, 150)
+GREY = (192,192,192)
 
 
 class Wall(pygame.sprite.Sprite):
@@ -67,6 +68,18 @@ class Key(pygame.sprite.Sprite):
             self.dungeon.tiles[self.col][self.row] = DungeonSqr('.')
             self.player.key_inventory = self.player.key_inventory + 1
    
+class Sword (pygame.sprite.Sprite):
+    def __init__(self,colour,x,y,player, damage, tile_size):
+        super().__init__()
+        
+        self.colour = colour
+        self.image = pygame.Surface((tile_size,tile_size))
+        self.image.fill(colour)
+        self.rect = self.image.get_rect()
+        self.rect.x  = x
+        self.rect.y = y
+        self.player = player
+        self.damage = damage
 
 class Monster(pygame.sprite.Sprite):
     def __init__(self, colour, x, y, tile_size, wall_group, col, row):
@@ -87,6 +100,7 @@ class Monster(pygame.sprite.Sprite):
         self.speed_y = 0
         self.old_x = x
         self.old_y = y
+        self.health = 2
     
     
     def has_hit_wall(self):
@@ -142,10 +156,11 @@ class Monster(pygame.sprite.Sprite):
         elif i == 3:
             self.speed_y = -2
             self.speed_x = 0
-        
+
+
 
 class Player(pygame.sprite.Sprite): 
-    def __init__(self,colour,tile_size,wall_group,offset_x, offset_y, window_width, window_height, monster_group, life_count):
+    def __init__(self,player_image,tile_size,wall_group,offset_x, offset_y, window_width, window_height, monster_group, life_count):
         super().__init__()
         
         #set player dimentions
@@ -153,8 +168,9 @@ class Player(pygame.sprite.Sprite):
         self.monster_group = monster_group
         self.speed_x = 0
         self.speed_y = 0
-        self.image = pygame.Surface([tile_size//2,tile_size//2])
-        self.image.fill(colour)
+        self.image = player_image
+#         pygame.Surface([tile_size//2,tile_size//2])
+#         self.image.fill(colour)
         self.key_inventory = 0
         
         self.rect = self.image.get_rect()              
@@ -403,13 +419,13 @@ def show_life(screen, life_count):
     
     
 def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor, level, enemy_count, life_count):
-    speed = 5
     print(life_count)
     WALL_IMAGE = pygame.transform.scale(pygame.image.load("brick.png").convert(),(tile_size,tile_size))
     FLOOR_IMAGE = pygame.transform.scale(pygame.image.load("floorcolour.png").convert(),(tile_size,tile_size))
     PORTAL_IMAGE = pygame.transform.scale(pygame.image.load("PORTAL_final.png").convert(),(tile_size,tile_size))
     END_PORTAL_IMAGE = pygame.transform.scale(pygame.image.load("END_PORTAL.png").convert(),(tile_size,tile_size))
     KEY_IMAGE = pygame.transform.scale(pygame.image.load("REAL_KEY.png").convert(),(tile_size,tile_size))
+    PLAYER_IMAGE = pygame.transform.scale(pygame.image.load("Hero_cropped.png").convert(),(30,30)) 
     
     window_width = numcols * tile_size
     window_height = numrows * tile_size
@@ -427,9 +443,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
     dungeon = DungeonGenerator(numcols * map_factor, numrows * map_factor, keys_asked, enemy_count)
     dungeon.generate_map()
     
-    my_player = Player(YELLOW,tile_size, wall_group, 0, 0, window_width, window_height, monster_group, life_count)
+    my_player = Player(PLAYER_IMAGE,tile_size, wall_group, 0, 0, window_width, window_height, monster_group, life_count)
     my_player.locate(dungeon, tile_size)
     player_sprite_group.add(my_player)
+    
+    iron_sword = Sword(GREY,0,0,my_player, 1, tile_size)
     
     dungeon_mini = MiniMap(dungeon.width, dungeon.height, BLACK, window_width)
     mini_map_sprite_group.add(dungeon_mini)
@@ -449,7 +467,9 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return (True, None)
-             
+            
+        
+        
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:#if left key is pressed
                     my_player.set_speed(-my_player.step_size,0)    
@@ -461,6 +481,11 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
                     my_player.set_speed(0,my_player.step_size)       
                 elif event.key == pygame.K_ESCAPE:
                     return (True,None)
+#                 elif event.key == pygame.K_SPACE:
+#                     for m in monster_group: #An array that holds instances of enemies 
+#                         if  m.rect.x #Using distance forumla to calculate player x and y values in corresondance to an enemies x and y position 
+#                             m.health -= iron_sword.damage #subtracts the enemies health by the amount of damage that the woodenSword does 
+
                     
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:

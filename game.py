@@ -1,4 +1,5 @@
 import pygame
+import math
 from bsp_alg import DungeonGenerator
 from pygame import gfxdraw
 from bsp_alg import DungeonSqr
@@ -82,7 +83,7 @@ class Sword (pygame.sprite.Sprite):
         self.damage = damage
 
 class Monster(pygame.sprite.Sprite):
-    def __init__(self, colour, x, y, tile_size, wall_group, col, row):
+    def __init__(self, colour, x, y, tile_size, wall_group, col, row, player):
         super().__init__()
         
         self.colour  = colour
@@ -102,6 +103,15 @@ class Monster(pygame.sprite.Sprite):
         self.old_y = y
         self.health = 2
     
+    def mover_to_player(self, player):
+        # Find direction vector (dx, dy) between enemy and player.
+        dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
+        dist = math.hypot(dx, dy)
+        dx, dy = dx / dist, dy / dist  # Normalize.
+        # Move along this normalized vector towards the player at current speed.
+        self.rect.x += dx * self.speed
+        self.rect.y += dy * self.speed
+        
     
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
@@ -111,7 +121,7 @@ class Monster(pygame.sprite.Sprite):
         return False
     
     
-    def update(self):
+    def update(self, player):
         w = self.has_hit_wall()
         if w:
             self.speed_x *= -1
@@ -132,30 +142,42 @@ class Monster(pygame.sprite.Sprite):
                     self.rect.y -= w.rect.height + y_diff
                 self.old_x = self.rect.x
                 self.old_y = self.rect.y
+    
         else:
             i = randint(0,19)
             if i == 1:
-                self.direction()
+                self.direction(player)
+                
             self.old_x = self.rect.x
             self.old_y = self.rect.y       
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
     
     
-    def direction(self):
-        i = randint(0,3)
-        if i == 0:
-            self.speed_x = 2
-            self.speed_y = 0
-        elif i == 1:
-            self.speed_x = -2
-            self.speed_y = 0 
-        elif i == 2:
-            self.speed_y = 2
-            self.speed_x = 0 
-        elif i == 3:
-            self.speed_y = -2
-            self.speed_x = 0
+    def direction(self, player):
+        # Find direction vector (dx, dy) between enemy and player.
+        if ((player.rect.x < self.rect.x + tile_size) or (player.rect.x < self.rect.x - tile_size)) and ((player.rect.y < self.rect.y + tile_size) or (player.rect.y < self.rect.y - tile_size)):
+            dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
+            dist = math.hypot(dx, dy)
+            dx, dy = dx / dist, dy / dist  
+            # Move along this normalized vector towards the player at current speed.
+            self.rect.x += dx * self.speed
+            self.rect.y += dy * self.speed
+        
+        else:
+            i = randint(0,3)
+            if i == 0:
+                self.speed_x = 2
+                self.speed_y = 0
+            elif i == 1:
+                self.speed_x = -2
+                self.speed_y = 0 
+            elif i == 2:
+                self.speed_y = 2
+                self.speed_x = 0 
+            elif i == 3:
+                self.speed_y = -2
+                self.speed_x = 0
 
 
 
@@ -390,7 +412,7 @@ def render_pygame_map(dungeon, wall_img, floor_img, portal_img, end_portal_img, 
                         existing=True
                         break
                 if not existing:
-                    monsters.append(Monster(RED, x, y, tile_size, wall_group, j, i))
+                    monsters.append(Monster(RED, x, y, tile_size, wall_group, j, i, my_player))
                 #end if
         #next colum
     #next row
@@ -496,7 +518,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         mini_map_sprite_group.update()
         background_sprite_group.update()
         player_sprite_group.update()
-        monster_group.update()
+        monster_group.update(my_player, 40)
         
         # modify offset
         shift(my_player, monster_group, wall_group)

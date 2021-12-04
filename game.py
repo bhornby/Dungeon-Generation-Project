@@ -102,17 +102,7 @@ class Monster(pygame.sprite.Sprite):
         self.old_x = x
         self.old_y = y
         self.health = 2
-    
-    def mover_to_player(self, player):
-        # Find direction vector (dx, dy) between enemy and player.
-        dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
-        dist = math.hypot(dx, dy)
-        dx, dy = dx / dist, dy / dist  # Normalize.
-        # Move along this normalized vector towards the player at current speed.
-        self.rect.x += dx * self.speed
-        self.rect.y += dy * self.speed
         
-    
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
         for w in wall_hit_list:
@@ -144,9 +134,7 @@ class Monster(pygame.sprite.Sprite):
                 self.old_y = self.rect.y
     
         else:
-            i = randint(0,19)
-            if i == 1:
-                self.direction(player)
+            self.direction(player)
                 
             self.old_x = self.rect.x
             self.old_y = self.rect.y       
@@ -156,14 +144,13 @@ class Monster(pygame.sprite.Sprite):
     
     def direction(self, player):
         # Find direction vector (dx, dy) between enemy and player.
-        if ((player.rect.x < self.rect.x + tile_size) or (player.rect.x < self.rect.x - tile_size)) and ((player.rect.y < self.rect.y + tile_size) or (player.rect.y < self.rect.y - tile_size)):
+        if (player.rect.x < self.rect.x + 40 or player.rect.x < self.rect.x - 40) and (player.rect.y < self.rect.y + 40 or player.rect.y < self.rect.y - 40):
             dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
             dist = math.hypot(dx, dy)
             dx, dy = dx / dist, dy / dist  
             # Move along this normalized vector towards the player at current speed.
-            self.rect.x += dx * self.speed
-            self.rect.y += dy * self.speed
-        
+            self.rect.x += dx * self.speed_x
+            self.rect.y += dy * self.speed_y
         else:
             i = randint(0,3)
             if i == 0:
@@ -518,7 +505,7 @@ def main_loop(screen, clock, tile_size, numrows, numcols, keys_asked, map_factor
         mini_map_sprite_group.update()
         background_sprite_group.update()
         player_sprite_group.update()
-        monster_group.update(my_player, 40)
+        monster_group.update(my_player)
         
         # modify offset
         shift(my_player, monster_group, wall_group)

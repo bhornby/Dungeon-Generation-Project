@@ -162,6 +162,8 @@ class Monster(pygame.sprite.Sprite):
             radius = self.tile_size * 2
         
         if self.tracking_count > 0 and self.speed_x == 0 and self.speed_y == 0:
+            self.tracking_count -= 1
+        else:
             if dist < radius:
                 # home in on player
                 self.tracking_count += 1
@@ -185,8 +187,7 @@ class Monster(pygame.sprite.Sprite):
                 change_dir = randint(0,19)
                 if change_dir == 1:
                     dir = randint(0,3)
-        else:
-            self.tracking_count -= 1  
+            
                 
         if dir == 0:
             self.speed_x = speed

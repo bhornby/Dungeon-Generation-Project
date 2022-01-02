@@ -102,6 +102,7 @@ class Monster(pygame.sprite.Sprite):
         self.old_x = x
         self.old_y = y
         self.health = 2
+        self.tile_size = tile_size
         
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
@@ -147,18 +148,21 @@ class Monster(pygame.sprite.Sprite):
         
         # Find direction vector (dx, dy) between enemy and player.
         dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
-        if abs(dy) < 40 and abs(dx) < 40:
+        dist = math.hypot(abs(dx), abs(dy))
+        speed = 2
+        if dist < self.tile_size * 3:
             # home in on player
+            speed = 1
             if abs(dy) > abs(dx):
                 if dy > 0:
-                    dir = 3
-                else:
                     dir = 2
+                else:
+                    dir = 3
             else:
                 if dx > 0:
-                    dir = 1
-                else:
                     dir = 0
+                else:
+                    dir = 1
         else:
             # far enough away for random movement
             change_dir = randint(0,19)
@@ -166,16 +170,16 @@ class Monster(pygame.sprite.Sprite):
                 dir = randint(0,3)
                 
         if dir == 0:
-            self.speed_x = 2
+            self.speed_x = speed
             self.speed_y = 0
         elif dir == 1:
-            self.speed_x = -2
+            self.speed_x = -speed
             self.speed_y = 0 
         elif dir == 2:
-            self.speed_y = 2
+            self.speed_y = speed
             self.speed_x = 0 
         elif dir == 3:
-            self.speed_y = -2
+            self.speed_y = -speed
             self.speed_x = 0
 
 

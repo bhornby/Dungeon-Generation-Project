@@ -106,7 +106,6 @@ class Monster(pygame.sprite.Sprite):
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
         for w in wall_hit_list:
-#             print(f"monster {self.rect.x},{self.rect.y} hit {w.rect.x},{w.rect.y} old {self.old_x},{self.old_y}")
             return w
         return False
     
@@ -143,28 +142,41 @@ class Monster(pygame.sprite.Sprite):
     
     
     def direction(self, player):
+        # -1 means dont change direction
+        dir = -1
+        
         # Find direction vector (dx, dy) between enemy and player.
-        if (player.rect.x < self.rect.x + 40 or player.rect.x < self.rect.x - 40) and (player.rect.y < self.rect.y + 40 or player.rect.y < self.rect.y - 40):
-            dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
-            dist = math.hypot(dx, dy)
-            dx, dy = dx / dist, dy / dist  
-            # Move along this normalized vector towards the player at current speed.
-            self.rect.x += dx * self.speed_x
-            self.rect.y += dy * self.speed_y
+        dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
+        if abs(dy) < 40 and abs(dx) < 40:
+            # home in on player
+            if abs(dy) > abs(dx):
+                if dy > 0:
+                    dir = 3
+                else:
+                    dir = 2
+            else:
+                if dx > 0:
+                    dir = 1
+                else:
+                    dir = 0
         else:
-            i = randint(0,3)
-            if i == 0:
-                self.speed_x = 2
-                self.speed_y = 0
-            elif i == 1:
-                self.speed_x = -2
-                self.speed_y = 0 
-            elif i == 2:
-                self.speed_y = 2
-                self.speed_x = 0 
-            elif i == 3:
-                self.speed_y = -2
-                self.speed_x = 0
+            # far enough away for random movement
+            change_dir = randint(0,19)
+            if change_dir == 1:
+                dir = randint(0,3)
+                
+        if dir == 0:
+            self.speed_x = 2
+            self.speed_y = 0
+        elif dir == 1:
+            self.speed_x = -2
+            self.speed_y = 0 
+        elif dir == 2:
+            self.speed_y = 2
+            self.speed_x = 0 
+        elif dir == 3:
+            self.speed_y = -2
+            self.speed_x = 0
 
 
 

@@ -156,7 +156,7 @@ class Monster(pygame.sprite.Sprite):
         radius = 0
         
         if self.tracking_count < 20:
-            radius = self.tile_size * 3
+            radius = self.tile_size * 4
             tracking_colour = YELLOW
         else:
             radius = self.tile_size * 2

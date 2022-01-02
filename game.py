@@ -13,6 +13,7 @@ BLACK = (0,0,0)
 COLOUR_DARK_WALL = (0, 0, 100)
 COLOUR_DARK_FLOOR = (50, 50, 150)
 GREY = (192,192,192)
+WHITE = (255,255,255)
 
 
 class Wall(pygame.sprite.Sprite):
@@ -103,6 +104,7 @@ class Monster(pygame.sprite.Sprite):
         self.old_y = y
         self.health = 2
         self.tile_size = tile_size
+        self.tracking_count = 0
         
     def has_hit_wall(self):
         wall_hit_list = pygame.sprite.spritecollide(self, self.wall_group, False)
@@ -150,8 +152,19 @@ class Monster(pygame.sprite.Sprite):
         dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
         dist = math.hypot(abs(dx), abs(dy))
         speed = 2
-        if dist < self.tile_size * 3:
+        tracking_colour = WHITE
+        radius = 0
+        
+        if self.tracking_count < 20:
+            radius = self.tile_size * 3
+            tracking_colour = YELLOW
+        else:
+            radius = self.tile_size * 2
+        
+        if dist < radius:
             # home in on player
+            self.tracking_count += 1
+            self.image.fill(tracking_colour)
             speed = 1
             if abs(dy) > abs(dx):
                 if dy > 0:
@@ -164,6 +177,9 @@ class Monster(pygame.sprite.Sprite):
                 else:
                     dir = 1
         else:
+            if self.tracking_count > 0:
+                self.tracking_count -= 1
+            self.image.fill(RED)
             # far enough away for random movement
             change_dir = randint(0,19)
             if change_dir == 1:

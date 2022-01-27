@@ -63,7 +63,6 @@ class DungeonGenerator:
             self.tiles.append(col)
         
     def split_on_horizontal(self, min_row, min_col, max_row, max_col):
-        #using the choice module from random allows ease of code writing no need for large array and item selection code
         #choice provieds the random split it is the wild card
         split = (min_row + max_row) // 2 + round(randrange(-30, 30) / 100 * (max_row - min_row))
         self.random_split(min_row, min_col, split, max_col)

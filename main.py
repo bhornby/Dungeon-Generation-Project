@@ -68,20 +68,24 @@ def draw_text(text, font, color, surface ,screen):
 def options_menu():
     options = True
     
-    screen_size_button = Button(screen.get_width()//2 - 100, screen.get_height()//3, 200, 50, RED,'Screen Size')
-    controls_button = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Controls')
-    audio_button = Button(screen.get_width()//2 - 100, screen.get_height()//2, 200, 50, RED, 'Audio')
+    screen_size_button = Button(screen.get_width()//2 - 200, screen.get_height()//3, 400, 50, RED,'Use Arrow Keys to Move')
+    controls_button = Button(screen.get_width()//2 - 200, screen.get_height()//2.4, 400, 50, RED, 'Collect keys to open Portals!')
+    audio_button = Button(screen.get_width()//2 - 200, screen.get_height()//2, 400, 50, RED, 'Avoid monsters at all costs!')
+    hint_4_button = Button(screen.get_width()//2 - 200, screen.get_height()//1.7, 400, 50, RED, 'Press ESC key to go back')
+    
+    
     
     
     def display_options():
         
         font = pygame.font.SysFont('m5x7', 70)
         screen.fill(WHITE)
-        draw_text('Options', font , BLACK, screen,screen)
+        draw_text('Hints', font , BLACK, screen,screen)
         
         screen_size_button.draw(screen,BLACK)
         controls_button.draw(screen,BLACK)
         audio_button.draw(screen,BLACK)
+        hint_4_button.draw(screen, BLACK)
             
     display_options()
     while options:
@@ -120,6 +124,14 @@ def options_menu():
                     audio_button.color = RED
                     audio_button.draw(screen, BLACK)
                 
+                if hint_4_button.isOver(pos):
+                    hint_4_button.color = LIGHT_RED
+                    hint_4_button.draw(screen, BLACK)
+                
+                else:
+                    hint_4_button.color = RED
+                    hint_4_button.draw(screen, BLACK)
+                
                     
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if screen_size_button.isOver(pos):
@@ -129,6 +141,9 @@ def options_menu():
                     pass
                 
                 if audio_button.isOver(pos):
+                    pass
+                
+                if hint_4_button.isOver(pos):
                     pass
             
                     
@@ -290,8 +305,8 @@ def main_menu():
     menu = True
     # self, x,y,width,height,color, text=''
     button_1 = Button(screen.get_width()//2 - 100, screen.get_height()//3, 200, 50, RED,'Start Game')
-    button_2 = Button(screen.get_width()//2 - 100, screen.get_height()//2, 200, 50, RED, 'Options')
-    button_3 = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Difficulty')
+    button_2 = Button(screen.get_width()//2 - 100, screen.get_height()//2.4, 200, 50, RED, 'Hints')
+    button_3 = Button(screen.get_width()//2 - 100, screen.get_height()//2, 200, 50, RED, 'Difficulty')
     #should probably make a button class
     
     def display_menu():
